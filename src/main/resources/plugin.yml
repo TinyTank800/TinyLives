@@ -1,0 +1,21 @@
+name: tinylives
+version: ${project.version}
+main: me.tinytank800.tinylives.tinylives
+api-version: 1.13
+authors: [ Tinytank800 ]
+description: A perfect limited life plugin.
+website: okamisquadron.com
+softdepend: [PlaceholderAPI]
+commands:
+  tinylives:
+    description: Used for tiny lives.
+    usage: /<command>
+  tl:
+    description: Used for tiny lives.
+    usage: /<command>
+  lives:
+    description: Used to see lives from tiny lives.
+    usage: /<command>
+  givelife:
+    description: Used to give lives from tiny lives.
+    usage: /<command>

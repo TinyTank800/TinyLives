@@ -1,0 +1,307 @@
+## Life types are the different ways lives can be given or reset
+## ONLY 1 OF THESE CAN BE ENABLED AT A TIME!
+## If none are set to enabled players will never respawn or gain lives unless you use a command.
+life-types:
+  all-death:
+    ## Players will only get to reset when they lose all their lives. (Per Player)
+    enabled: true
+    delay: 17280000 #Delay in ticks between each reset. 20 ticks = 1 sec. Default 17280000(10 Days).
+    ##player reset messages for when a player gets all their lives back after all death.
+    reset-lives: 3 #The amount of lives given back on reset.
+    disable-messages: false
+    messages:
+      - "&cAll your lives have been reset!"
+      - "&eYou now have 3 lives"
+  add-lives:
+    ## Players will gain a life after a specified amount of time. (Global)
+    ## This will add 1 life every time the timer is reached.
+    enabled: false
+    delay: 1728000 #Delay in ticks between each reset. 20 ticks = 1 sec. Default 17280000(10 Days).
+    ##Add life Messages for when an add life happens and do you want to disable said messages.
+    disable-messages: false
+    messages:
+      - "&bEveryone has gained a life!"
+      - "&eGood job not dying!"
+  global-reset:
+    ## Players will all be reset back to max lives after specified amount of time. (Global)
+    ## Extra lives are not reset on a reset.
+    enabled: false
+    delay: 51840000 #Delay in ticks between each reset. 20 ticks = 1 sec. Default 51840000(30 Days).
+    ##Reset broadcast messages for when a reset happens.
+    reset-lives: 3 #The amount of lives given back on reset.
+    disable-messages: false
+    messages:
+      - "&cAll lives have been reset!"
+      - "&eFor those who survived this reset, Congrats!"
+
+
+## All settings related to life counts and extra lives.
+life-settings:
+  per-life-respawn:
+    ##How long it takes to respawn per life.
+    ##Time in ticks for how long it lasts. Default 1 hour
+    enabled: false
+    time: 72000
+  respawn-cooldown:
+    ##Period of no damage after respawn.
+    ##Time in ticks for how long it lasts.
+    enabled: false
+    time: 200
+  lives: 3 #Number of lives you want each player to have. Default 3 lives. This also acts as a default max. Can be bypasses with max lives perm.
+  random-lives:
+    ##Give players random lives on join and after respawns.
+    enabled: false
+    min-lives: 2
+    max-lives: 6
+  extra-lives:
+    ##Extra Lives. Do you want them on? this makes it so if they gain a life from the give life command they will
+    ##Keep that life until they die and it does not take normal life. THEY WILL NOT START WITH EXTRA LIVES!
+    ##THEY ONLY CAN GAIN THEM FROM THE COMMAND. Does not reset on resets.
+    enabled: false
+    max-extra-lives: 2
+
+
+
+
+##Make a player an assassin. They will HAVE to kill a player within a specific time period or else they loose a life.
+##ONLY 1 CAN BE CHOSEN! Global or Player Set to global as default
+assassin:
+  enabled: false #Disabling this makes assassins not be chosen.
+  gain-lives: false #Do assassins gain lives on kills? Kinda like stealing the persons life they took.
+  ##------TYPES-------
+  player:
+    ##Player assassin. This gives a chance to become on. They will have till they log off to kill someone if chosen.
+    enabled: false
+    ##Chance in percent to be chosen as assassin on join. 1/100 default 2%
+    chance: 2
+    ##Time they have to kill someone. Default 4 hours 288000
+    time: 288000
+    ##Time it takes for them to be assigned again after leaving and joining. Default 16 Hours 1152000 ticks
+    ##This is here to stop players from spam leaving and joining.
+    cooldown: 1152000
+  global:
+    ##Global assassin. Timer which sets 1 or more players as assassin
+    enabled: true
+    ##How many assassins should be chosen each time
+    count: 1
+    ##Time in ticks they have to kill a player. Default 8 Hours 576000 ticks
+    time: 576000
+    ##Time it takes for another assassin to be chosen. Default 16 Hours 1152000 ticks
+    cooldown: 1152000
+  ##Titles for assassin events.
+  titles:
+    chosen:
+      message: "&cYou are the assassin!"
+      sound:
+        enabled: true
+        ##Sound that is played when they are chosen.
+        sound: CAVE_AMBIENT
+        pitch: 2
+        volume: 2
+      title:
+        enabled: true
+        ##Title that shows when you are chosen as assassin.
+        title: "&cYou are the assassin!"
+        subTitle: "&cKill a player within 4 hours or lose a life..."
+        fadeIn: 20
+        stay: 100
+        fadeOut: 20
+    not-chosen:
+      message: "&aYou are not the assassin!"
+      sound:
+        enabled: true
+        ##Sound that is played when they are chosen.
+        sound: ITEM_TOTEM_USE
+        pitch: 2
+        volume: 2
+      title:
+        enabled: true
+        ##Title that shows when you are NOT chosen as assassin.
+        title: "&aYou are not the assassin!"
+        subTitle: "&eI would still watch your back..."
+        fadeIn: 20
+        stay: 100
+        fadeOut: 20
+    failed:
+      message: "&a%tinylives_player_raw% was not a successful assassin."
+      sound:
+        enabled: true
+        ##Sound that is played when they have not finished a kill in time.
+        sound: ITEM_TOTEM_USE
+        pitch: 2
+        volume: 2
+      title:
+        enabled: true
+        ##Title that shows when they have not finished a kill in time.
+        title: "&cYou have failed!"
+        subTitle: "&cYou have now lost your own life..."
+        fadeIn: 20
+        stay: 100
+        fadeOut: 20
+    success:
+      message: "&c%tinylives_player_raw% has been a successful assassin."
+      sound:
+        enabled: true
+        ##Sound that is played when they have completed a kill.
+        sound: ITEM_TOTEM_USE
+        pitch: 2
+        volume: 2
+      title:
+        enabled: true
+        ##Title that shows when they have completed a kill.
+        title: "&aYou were a successful assassin!"
+        subTitle: "&aYou have saved yourself..."
+        fadeIn: 20
+        stay: 100
+        fadeOut: 20
+
+
+
+
+
+## Death types are the different ways players can be handled after all lives are lost.
+## ONLY 1 OF THESE CAN BE ENABLED AT A TIME!
+## If none are set to enabled spectator will be defaulted to on.
+death-types:
+  ban-players:
+    ##Do you want to ban players on all lives lost?
+    ##This will only kick them everytime they join until a reset. If you dont have a reset then it will always kick them.
+    enabled: false
+    kick-message: 'You have lost all your lives. You must now wait for a reset. Next reset in %tinylives_info_day% days.'
+  deadman-world:
+    ##Enable dead man world? This will make it so when a player dies they go to that
+    ##World instead of the main world. On reset they will be moved back.
+    ##To make sure this works ban-players must be set false.
+    ##MAIN WORLD NEEDS TO BE SET TO THE WORLD THEY ARE IN WHEN ALIVE.
+    enabled: false
+    deadman-world-name: "world-dead"
+    move-message: '&eYou have lost all your lives and are now inside &c&ldeadmans land.'
+  ghost-players:
+    ## Ghost players is the default way to handle dead players.
+    ## This will put any player who is dead into spectator until a reset.
+    enabled: true
+
+
+## Settings for player deaths.
+death-settings:
+  pvp-only-deaths: false #PVP only deaths. Will deaths only be taken if its a player caused death?
+  disable-pvp-deaths: false #Do you want to disable pvp deaths so only mobs or self caused deaths affect lives?
+  enable-death-tp: false #Do you want players to teleport on death. Settings inside lives.yml.
+
+
+#Settings for pvp stuff.
+pvp-settings:
+  punish-combat-log: false #Removes 1 life from players who disconnect during combat.
+  combat-timer: 1200 #Time in ticks the player stays in combat (Default 1200 ticks 60 seconds).
+  messages:
+    entered:
+      enabled: true
+      message: "&aYou have entered combat!"
+    exited:
+      enabled: true
+      message: "&aYou have exited combat."
+    cantstart:
+      enabled: true
+      message: "&cYou cannot start combat!"
+    cantfightback:
+      enabled: true
+      message: "&cYou cannot fight back!"
+
+
+
+
+## Settings to do with worlds.
+world-settings:
+  #Main world should be set to the world all living players are in or the main survival world.
+  main-world: "world"
+  ##Enabled worlds. These are the worlds you want affected by the plugin or
+  ##Which worlds lives should be taken on death.
+  enabled-worlds:
+    - "world"
+    - "world_nether"
+    - "world_the_end"
+
+
+
+
+## All settings to do with chat messaging and titles.
+message-settings:
+  centered-text: true #Do you want your text inside messages to be auto centered? This has to do with messages that send the prefix first then messages below.
+  prefixs:
+    ##Prefix that is shown before all messages. Do you want the prefix to be disabled?
+    prefix: '&7----&e[&aTiny Lives&e]&7----'
+    disable-prefix: false #Do you want to disable the added prefix?
+    command-prefix: "&e[&aTiny Lives&e] " #Command prefix. This is added to any commands that show the prefix. Mainly if you dont have perms.
+  titles:
+    welcome-title:
+      enabled: true
+      ##Title that shows on first join!
+      title: "&eWelcome to Tiny Lives!"
+      subTitle: "&eYou have %tinylives_color%%tinylives_lives% &elives left..."
+      fadeIn: 20
+      stay: 100
+      fadeOut: 20
+    death-title:
+      enabled: true
+      ##Title that shows on death!
+      title: "&c&lYou have died!!!"
+      subTitle: "&eYou have %tinylives_color%%tinylives_lives% &elives left..."
+      fadeIn: 20
+      stay: 100
+      fadeOut: 20
+    extra-life-title:
+      enabled: true
+      ##Title that shows on use of an extra life!
+      title: "&c&lYou have died but had an extra life!!!"
+      subTitle: "&eYou still have %tinylives_color%%tinylives_lives% &elives left..."
+      fadeIn: 20
+      stay: 100
+      fadeOut: 20
+    reset-title:
+      enabled: true
+      ##Title that shows on reset or respawn!
+      title: "&a&lYour lives were reset..."
+      subTitle: "&eYou have %tinylives_lives% lives left..."
+      fadeIn: 20
+      stay: 100
+      fadeOut: 20
+  messages:
+    info:
+      message: "You have %tinylives_info_day% days till you get more lives."
+    global-death:
+      ##Message that is sent to everyone on a players death.
+      enabled: true
+      message: "%tinylives_player% &ehas died and is now on %tinylives_color%%tinylives_lives% &elive/s!"
+    global-final-death:
+      ##Message that is sent to everyone when a player losses all thier lives.
+      enabled: true
+      message: "%tinylives_player% &ehas lost all their lives!"
+    player-reset:
+      ##player reset messages for when a player gets all their lives reset by command.
+      enabled: true
+      messages:
+      - "&cAll your lives have been reset!"
+      - "&eYou now have %tinylives_lives% lives"
+    player-first-join:
+      ##Message sent to player on first joining.
+      enabled: true
+      messages:
+      - "&aWelcome to 3 Tiny Lives!"
+      - "&eYou have 3 lives..."
+      - "&bIf you lose all 3 you must wait 7 Days"
+      - "&bTo get more lives."
+
+
+
+
+##This gives info about whats going on in the plugin.
+##This is helpful for if you are getting errors and dont know why.
+##This also helps me give you support when a bug is happening.
+##MODES:
+## 0: off
+## 1: Simple Info
+## 2: Indepth Info - these spam console much more.
+debug: 0
+
+
+
