@@ -841,16 +841,16 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                             player.sendMessage(ChatColor.GREEN + "/TinyLives debug " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Enables/Disables debug mode.");
                         }
                         if(player.hasPermission("tinylives.addlife")) {
-                            player.sendMessage(ChatColor.GREEN + "/TinyLives addlife (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Adds 1 life to specific player.");
+                            player.sendMessage(ChatColor.GREEN + "/TinyLives addlife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Adds 1 life to specific player.");
                         }
                         if(player.hasPermission("tinylives.removelife")) {
-                            player.sendMessage(ChatColor.GREEN + "/TinyLives removelife (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Removes 1 life from specific player.");
+                            player.sendMessage(ChatColor.GREEN + "/TinyLives removelife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Removes 1 life from specific player.");
                         }
                         if(player.hasPermission("tinylives.addextralife")) {
-                            player.sendMessage(ChatColor.GREEN + "/TinyLives addextralife (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Adds 1 extra life to specific player.");
+                            player.sendMessage(ChatColor.GREEN + "/TinyLives addextralife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Adds 1 extra life to specific player.");
                         }
                         if(player.hasPermission("tinylives.removeextralife")) {
-                            player.sendMessage(ChatColor.GREEN + "/TinyLives removeextralife (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Removes 1 extra life from specific player.");
+                            player.sendMessage(ChatColor.GREEN + "/TinyLives removeextralife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Removes 1 extra life from specific player.");
                         }
                         if(player.hasPermission("tinylives.givelife")) {
                             player.sendMessage(ChatColor.GREEN + "/TinyLives givelife (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + "  Gives 1 of your lives to specified player.");
@@ -1017,37 +1017,46 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(args.length >= 2) {
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                    try {
+                                        if(args.length >= 3) {
+                                            lifeAmount = Integer.parseInt(args[2]);
+                                        } else {
+                                            lifeAmount = 1;
+                                        }
+                                    } catch (NumberFormatException ignored) {
+                                        lifeAmount = 1;
+                                    }
                                 if(customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())){
-                                    if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") < customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-lives")){
+                                    if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + lifeAmount <= customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-lives")){
                                         if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") > 0) {
                                             //Add life
-                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + 1);
+                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + lifeAmount);
                                             customConfig.save();
-                                            customConfig.reload();
                                             if(livesConfig.get().contains("lives." + customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives"))){
                                                 if(!livesConfig.get().getBoolean("disable-life-prefixs")) {
                                                     TargetPlayer.setDisplayName(ChatColor.translateAlternateColorCodes('&', (livesConfig.get().getString("lives." + customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + ".prefix") + livesConfig.get().getString("lives." + customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + ".color") + TargetPlayer.getName() + "&r")));
                                                 }
                                             }
-                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Added a life to " + TargetPlayer.getName() + "!");
+                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Added " + lifeAmount + " lives to " + TargetPlayer.getName() + "!");
                                             return true;
                                         } else {
                                             //Respawn with 1 life
                                             PlayerUtil.ResetPlayer(TargetPlayer);
 
+                                            int finalLifeAmount = lifeAmount;
                                             new BukkitRunnable() {
                                                 public void run() {
                                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".respawning", false);
                                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".dead", false);
-                                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", 1);
+                                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", finalLifeAmount);
                                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
                                                     customConfig.save();
-                                                    customConfig.reload();
 
                                                     PlayerUtil.SetDisplayName(TargetPlayer);
 
-                                                    TargetPlayer.sendTitle((ChatColor.translateAlternateColorCodes('&', ("&aYou have been given another life..."))), (ChatColor.translateAlternateColorCodes('&', ("&eYou have " + 1 + " lives left..."))), 20, 100, 20);
-                                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Added a life to " + TargetPlayer.getName() + "!");
+                                                    TargetPlayer.sendTitle((ChatColor.translateAlternateColorCodes('&', ("&aYou have been given another life..."))), (ChatColor.translateAlternateColorCodes('&', ("&eYou have " + finalLifeAmount + " lives left..."))), 20, 100, 20);
+                                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Added " + finalLifeAmount + " lives to " + TargetPlayer.getName() + "!");
                                                 }
                                             }.runTaskLater(this, 10);
 
@@ -1055,7 +1064,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                         }
                                     } else {
                                         //Already at max lives.
-                                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max lives!");
+                                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max lives or number given will push them above max!");
                                         return true;
                                     }
                                 } else {
@@ -1064,7 +1073,6 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", lives);
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
                                     customConfig.save();
-                                    customConfig.reload();
 
                                     PlayerUtil.SetDisplayName(TargetPlayer);
 
@@ -1091,23 +1099,34 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(args.length >= 2) {
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                try {
+                                    if(args.length >= 3) {
+                                        lifeAmount = Integer.parseInt(args[2]);
+                                    } else {
+                                        lifeAmount = 1;
+                                    }
+                                } catch (NumberFormatException ignored){
+                                    lifeAmount = 1;
+                                }
                                 if(customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())){
                                     if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") > 0){
-                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") >= 2) {
+                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") > lifeAmount) {
                                             //Remove life
-                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") - 1);
+                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") - lifeAmount);
                                             customConfig.save();
-                                            customConfig.reload();
 
                                             PlayerUtil.SetDisplayName(TargetPlayer);
 
-                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Removed a life from " + TargetPlayer.getName() + "!");
+                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Removed " + lifeAmount + " lives from " + TargetPlayer.getName() + "!");
                                             return true;
                                         } else {
                                             //Kill player
+                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", 1);
+                                            customConfig.save();
                                             PlayerUtil.KillPlayer(TargetPlayer);
 
-                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Removed a life from " + TargetPlayer.getName() + "!");
+                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Removed " + lifeAmount + " lives from " + TargetPlayer.getName() + "!");
                                             return true;
                                         }
                                     } else {
@@ -1121,7 +1140,6 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", lives);
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
                                     customConfig.save();
-                                    customConfig.reload();
 
                                     PlayerUtil.SetDisplayName(TargetPlayer);
 
@@ -1133,7 +1151,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                 return true;
                             }
                         } else {
-                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not the correct usage! /TinyLives addlife (Player)");
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not the correct usage! /TinyLives removelife (Player)");
                             return true;
                         }
                     }
@@ -1148,23 +1166,31 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(args.length >= 2) {
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                try {
+                                    if(args.length >= 3) {
+                                        lifeAmount = Integer.parseInt(args[2]);
+                                    } else {
+                                        lifeAmount = 1;
+                                    }
+                                } catch (NumberFormatException ignored){
+                                    lifeAmount = 1;
+                                }
                                 if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())) {
                                     if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives")) {
-                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") < customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-extra-lives")){
-                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") + 1);
+                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") + lifeAmount <= customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-extra-lives")){
+                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") + lifeAmount);
                                             customConfig.save();
-                                            customConfig.reload();
-                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given and extra life to " + TargetPlayer.getName().toString() + "!");
+                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given " + lifeAmount +" extra lives to " + TargetPlayer.getName().toString() + "!");
                                             return true;
                                         } else {
-                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max extra lives!");
+                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max extra lives or the amount of lives given will push them past max!");
                                             return true;
                                         }
                                     } else {
-                                        customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", 1);
+                                        customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", lifeAmount);
                                         customConfig.save();
-                                        customConfig.reload();
-                                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given and extra life to " + TargetPlayer.getName().toString() + "!");
+                                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given " + lifeAmount +" extra lives to " + TargetPlayer.getName().toString() + "!");
                                         return true;
                                     }
                                 } else {
@@ -1174,19 +1200,18 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", 1);
                                     customConfig.save();
-                                    customConfig.reload();
 
                                     PlayerUtil.SetDisplayName(TargetPlayer);
 
-                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given and extra life to " + TargetPlayer.getName().toString() + "!");
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given " + lifeAmount +" extra lives to " + TargetPlayer.getName().toString() + "!");
                                     return true;
                                 }
                             } else {
-                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid player! /TinyaLives addextralife (player)");
+                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid player! /TinyLives addextralife (player)");
                                 return true;
                             }
                         } else {
-                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid usage! /TinyaLives addextralife (player)");
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid usage! /TinyLives addextralife (player)");
                             return true;
                         }
                     }
@@ -1201,23 +1226,31 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(args.length >= 2) {
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                try {
+                                    if(args.length >= 3) {
+                                        lifeAmount = Integer.parseInt(args[2]);
+                                    } else {
+                                        lifeAmount = 1;
+                                    }
+                                } catch (NumberFormatException ignored){
+                                    lifeAmount = 1;
+                                }
                                 if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())) {
                                     if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives")) {
-                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") >= 1){
-                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") - 1);
+                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") - lifeAmount >= 0){
+                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") - lifeAmount);
                                             customConfig.save();
-                                            customConfig.reload();
-                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed an extra life from " + TargetPlayer.getName().toString() + "!");
+                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed " + lifeAmount + " extra lives from " + TargetPlayer.getName().toString() + "!");
                                             return true;
                                         } else {
-                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already out of extra lives!");
+                                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already out of extra lives or number given will put them below 0!");
                                             return true;
                                         }
                                     } else {
                                         customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", 0);
                                         customConfig.save();
-                                        customConfig.reload();
-                                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed an extra life from " + TargetPlayer.getName().toString() + "!");
+                                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed " + lifeAmount + " extra lives from " + TargetPlayer.getName().toString() + "!");
                                         return true;
                                     }
                                 } else {
@@ -1227,19 +1260,18 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", 0);
                                     customConfig.save();
-                                    customConfig.reload();
 
                                     PlayerUtil.SetDisplayName(TargetPlayer);
 
-                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed an extra life from " + TargetPlayer.getName().toString() + "!");
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed " + lifeAmount + " extra lives from " + TargetPlayer.getName().toString() + "!");
                                     return true;
                                 }
                             } else {
-                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid player! /TinyaLives removeextralife (player)");
+                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid player! /TinyLives removeextralife (player)");
                                 return true;
                             }
                         } else {
-                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid usage! /TinyaLives removeextralife (player)");
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid usage! /TinyLives removeextralife (player)");
                             return true;
                         }
                     }
@@ -1308,10 +1340,10 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         getLogger().info(ChatColor.GREEN + "/TinyLives resetall " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Reset all players lives. This forces a reset and can take up to 10min to trigger.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives reset (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Resets a specific players lives.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives debug " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Enables/Disables debug mode.");
-                        getLogger().info(ChatColor.GREEN + "/TinyLives addlife (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Adds 1 life to specific player.");
-                        getLogger().info(ChatColor.GREEN + "/TinyLives removelife (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Removes 1 life from specific player.");
-                        getLogger().info(ChatColor.GREEN + "/TinyLives addextralife (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Adds 1 extra life to specific player.");
-                        getLogger().info(ChatColor.GREEN + "/TinyLives removeextralife (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Removes 1 extra life from specific player.");
+                        getLogger().info(ChatColor.GREEN + "/TinyLives addlife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Adds 1 life to specific player.");
+                        getLogger().info(ChatColor.GREEN + "/TinyLives removelife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Removes 1 life from specific player.");
+                        getLogger().info(ChatColor.GREEN + "/TinyLives addextralife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Adds 1 extra life to specific player.");
+                        getLogger().info(ChatColor.GREEN + "/TinyLives removeextralife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Removes 1 extra life from specific player.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives givelife (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + "  Gives 1 of your lives to specified player.");
                         getLogger().info(ChatColor.GREEN + "/Lives " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Tells you how many lives you have left.");
                         return true;
@@ -1419,15 +1451,25 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(args.length >= 2) {
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                try {
+                                    if(args.length >= 3) {
+                                        lifeAmount = Integer.parseInt(args[2]);
+                                    } else {
+                                        lifeAmount = 1;
+                                    }
+                                } catch (NumberFormatException ignored){
+                                    lifeAmount = 1;
+                                }
                                 ChatUtil.console("Player found", 2);
                                 if(customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())){
                                     ChatUtil.console("Player config found", 2);
-                                    if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") < customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-lives")){
+                                    if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + lifeAmount <= customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-lives")){
                                         ChatUtil.console("Player config found check lives", 2);
                                         if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") > 0) {
                                             //Add life
-                                            ChatUtil.console("Adding life", 2);
-                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + 1);
+                                            ChatUtil.console("Adding lives", 2);
+                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + lifeAmount);
                                             customConfig.save();
                                             if(livesConfig.get().contains("lives." + customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives"))){
                                                 if(!livesConfig.get().getBoolean("disable-life-prefixs")) {
@@ -1435,28 +1477,28 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                                     //TargetPlayer.setDisplayName(ChatColor.translateAlternateColorCodes('&', (livesConfig.get().getString("lives." + customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + ".prefix") + livesConfig.get().getString("lives." + customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + ".color") + TargetPlayer.getName() + "&r")));
                                                 }
                                             }
-                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Added a life to " + TargetPlayer.getName() + "!");
+                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Added " + lifeAmount + " lives to " + TargetPlayer.getName() + "!");
                                             return true;
                                         } else {
                                             //Respawn with 1 life
 
                                             PlayerUtil.ResetPlayer(TargetPlayer);
 
+                                            int finalLifeAmount = lifeAmount;
                                             new BukkitRunnable() {
                                                 public void run() {
                                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".respawning", false);
                                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".dead", false);
-                                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", 1);
+                                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", finalLifeAmount);
                                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
                                                     customConfig.save();
-                                                    customConfig.reload();
                                                     if(livesConfig.get().contains("lives." + customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives"))){
                                                         if(!livesConfig.get().getBoolean("disable-life-prefixs")) {
                                                             TargetPlayer.setDisplayName(ChatColor.translateAlternateColorCodes('&', (livesConfig.get().getString("lives." + customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + ".prefix") + livesConfig.get().getString("lives." + customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + ".color") + TargetPlayer.getName() + "&r")));
                                                         }
                                                     }
                                                     TargetPlayer.sendTitle((ChatColor.translateAlternateColorCodes('&', ("&aYou have been given another life..."))), (ChatColor.translateAlternateColorCodes('&', ("&eYou have " + 1 + " lives left..."))), 20, 100, 20);
-                                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Added a life to " + TargetPlayer.getName() + "!");
+                                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Added " + finalLifeAmount + " lives to " + TargetPlayer.getName() + "!");
                                                 }
                                             }.runTaskLater(this, 10);
 
@@ -1464,7 +1506,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                         }
                                     } else {
                                         //Already at max lives.
-                                        getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max lives!");
+                                        getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max lives or number given will push them past max!");
                                         return true;
                                     }
                                 } else {
@@ -1473,11 +1515,10 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", lives);
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
                                     customConfig.save();
-                                    customConfig.reload();
 
                                     PlayerUtil.SetDisplayName(TargetPlayer);
 
-                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max lives!");
+                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max lives or number given will push them past max!");
                                     return true;
                                 }
                             } else {
@@ -1495,23 +1536,34 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(args.length >= 2) {
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                try {
+                                    if(args.length >= 3) {
+                                        lifeAmount = Integer.parseInt(args[2]);
+                                    } else {
+                                        lifeAmount = 1;
+                                    }
+                                } catch (NumberFormatException ignored){
+                                    lifeAmount = 1;
+                                }
                                 if(customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())){
                                     if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") > 0){
-                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") >= 2) {
+                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") > lifeAmount) {
                                             //Remove life
-                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") - 1);
+                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") - lifeAmount);
                                             customConfig.save();
-                                            customConfig.reload();
 
                                             PlayerUtil.SetDisplayName(TargetPlayer);
 
-                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Removed a life from " + TargetPlayer.getName() + "!");
+                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Removed " + lifeAmount + " lives from " + TargetPlayer.getName() + "!");
                                             return true;
                                         } else {
                                             //Kill player
+                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", 1);
+                                            customConfig.save();
                                             PlayerUtil.KillPlayer(TargetPlayer);
 
-                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Removed a life from " + TargetPlayer.getName() + "!");
+                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Removed " + lifeAmount + " lives from " + TargetPlayer.getName() + "!");
                                             return true;
                                         }
                                     } else {
@@ -1525,7 +1577,6 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", lives);
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
                                     customConfig.save();
-                                    customConfig.reload();
 
                                     PlayerUtil.SetDisplayName(TargetPlayer);
 
@@ -1537,7 +1588,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                 return true;
                             }
                         } else {
-                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not the correct usage! /TinyLives addlife (Player)");
+                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not the correct usage! /TinyLives removelife (Player)");
                             return true;
                         }
                     }
@@ -1547,23 +1598,32 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(args.length >= 2) {
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                try {
+                                    if(args.length >= 3) {
+                                        lifeAmount = Integer.parseInt(args[2]);
+                                    } else {
+                                        lifeAmount = 1;
+                                    }
+                                } catch (NumberFormatException ignored){
+                                    lifeAmount = 1;
+                                }
                                 if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())) {
                                     if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives")) {
-                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") < customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-extra-lives")){
-                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") + 1);
+                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") + lifeAmount <= customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-extra-lives")){
+                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") + lifeAmount);
                                             customConfig.save();
-                                            customConfig.reload();
-                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given and extra life to " + TargetPlayer.getName().toString() + "!");
+                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given " + lifeAmount + " extra lives to " + TargetPlayer.getName().toString() + "!");
                                             return true;
                                         } else {
-                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max extra lives!");
+                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max extra lives or number will push them past max!");
                                             return true;
                                         }
                                     } else {
-                                        customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", 1);
+                                        customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", lifeAmount);
                                         customConfig.save();
                                         customConfig.reload();
-                                        getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given and extra life to " + TargetPlayer.getName().toString() + "!");
+                                        getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given " + lifeAmount + " extra lives to " + TargetPlayer.getName().toString() + "!");
                                         return true;
                                     }
                                 } else {
@@ -1571,21 +1631,20 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".dead", false);
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", lives);
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
-                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", 1);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", lifeAmount);
                                     customConfig.save();
-                                    customConfig.reload();
 
                                     PlayerUtil.SetDisplayName(TargetPlayer);
 
-                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given and extra life to " + TargetPlayer.getName().toString() + "!");
+                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given " + lifeAmount + " extra lives to " + TargetPlayer.getName().toString() + "!");
                                     return true;
                                 }
                             } else {
-                                getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid player! /TinyaLives addextralife (player)");
+                                getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid player! /TinyLives addextralife (player)");
                                 return true;
                             }
                         } else {
-                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid usage! /TinyaLives addextralife (player)");
+                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid usage! /TinyLives addextralife (player)");
                             return true;
                         }
                     }
@@ -1595,13 +1654,22 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(args.length >= 2) {
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                try {
+                                    if(args.length >= 3) {
+                                        lifeAmount = Integer.parseInt(args[2]);
+                                    } else {
+                                        lifeAmount = 1;
+                                    }
+                                } catch (NumberFormatException ignored){
+                                    lifeAmount = 1;
+                                }
                                 if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())) {
                                     if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives")) {
-                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") >= 1){
-                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") - 1);
+                                        if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") - lifeAmount >= 0){
+                                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") - lifeAmount);
                                             customConfig.save();
-                                            customConfig.reload();
-                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed an extra life from " + TargetPlayer.getName().toString() + "!");
+                                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed " + lifeAmount + " extra lives from " + TargetPlayer.getName().toString() + "!");
                                             return true;
                                         } else {
                                             getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already out of extra lives!");
@@ -1610,8 +1678,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     } else {
                                         customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", 0);
                                         customConfig.save();
-                                        customConfig.reload();
-                                        getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed an extra life from " + TargetPlayer.getName().toString() + "!");
+                                        getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed " + lifeAmount + " extra lives from " + TargetPlayer.getName().toString() + "!");
                                         return true;
                                     }
                                 } else {
@@ -1621,19 +1688,18 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", 0);
                                     customConfig.save();
-                                    customConfig.reload();
 
                                     PlayerUtil.SetDisplayName(TargetPlayer);
 
-                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed an extra life from " + TargetPlayer.getName().toString() + "!");
+                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have removed " + lifeAmount + " extra lives from " + TargetPlayer.getName().toString() + "!");
                                     return true;
                                 }
                             } else {
-                                getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid player! /TinyaLives removeextralife (player)");
+                                getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid player! /TinyLives removeextralife (player)");
                                 return true;
                             }
                         } else {
-                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid usage! /TinyaLives removeextralife (player)");
+                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid usage! /TinyLives removeextralife (player)");
                             return true;
                         }
                     }
