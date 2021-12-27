@@ -244,23 +244,27 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
                         Object[] playerKeys = customConfig.get().getConfigurationSection("players").getKeys(false).toArray();
 
-                        for (Object key : playerKeys){
-                            int pLives = customConfig.get().getInt("players."+key+".lives");
-                            if(customConfig.get().contains("players."+key+".max-lives")){
-                                if(pLives < customConfig.get().getInt("players."+key+".max-lives")){
-                                    customConfig.get().set("players."+key+".lives", pLives + 1);
+                        for (Object key : playerKeys) {
+                            int pLives = customConfig.get().getInt("players." + key + ".lives");
+                            if (customConfig.get().contains("players." + key + ".max-lives")) {
+                                if (pLives < customConfig.get().getInt("players." + key + ".max-lives")) {
+                                    customConfig.get().set("players." + key + ".lives", pLives + 1);
                                 }
-                            } else if(pLives < lives){
-                                customConfig.get().set("players."+key+".lives", pLives + 1);
+                            } else if (pLives < lives) {
+                                customConfig.get().set("players." + key + ".lives", pLives + 1);
                             }
                         }
                         //customConfig.save();
                         //customConfig.reload();
 
-                        if(!getConfig().getBoolean("life-types.add-lives.disable-messages")) {
-                            for (Player player : Bukkit.getOnlinePlayers()) {
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            PlayerUtil.SetDisplayName(player);
+                            if(!getConfig().getBoolean("life-types.add-lives.disable-messages")) {
                                 ChatUtil.NotifyPlayerBlock(getConfig().getStringList("life-types.add-lives.messages"), player);
-                                PlayerUtil.SetDisplayName(player);
+                            }
+
+                            if(PlayerUtil.CheckPlayerDeadWorld(player)){
+                                PlayerUtil.MoveWorld(player,1);
                             }
                         }
                     }
@@ -303,6 +307,9 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     //customConfig.reload();
 
                                     PlayerUtil.ResetPlayer(player);
+                                    if(PlayerUtil.CheckPlayerDeadWorld(player)){
+                                        PlayerUtil.MoveWorld(player,1);
+                                    }
                                 }
                             } else {
                                 customConfig.get().set("players."+key+".respawn-time", pTime - ScheduleDelay);
@@ -355,6 +362,10 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                             PlayerUtil.SetDisplayName(player);
                             if(!getConfig().getBoolean("life-types.global-reset.disable-messages")) {
                                 ChatUtil.NotifyPlayerBlock(getConfig().getStringList("life-types.global-reset.messages"), player);
+                            }
+
+                            if(PlayerUtil.CheckPlayerDeadWorld(player)){
+                                PlayerUtil.MoveWorld(player,1);
                             }
                         }
                     } else {

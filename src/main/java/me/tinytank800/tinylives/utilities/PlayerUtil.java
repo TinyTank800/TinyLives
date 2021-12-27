@@ -310,7 +310,7 @@ public class PlayerUtil {
             if(DeadMansW == null){
                 ChatUtil.console("DEFAULT WORLD WAS NOT FOUND!", 1);
             }
-            ChatUtil.console((player + " Is being moved to the deadmans world!"), 0);
+            ChatUtil.console((player.getName() + " Is being moved to the deadmans world!"), 0);
             Location defSpawnLocation = DeadMansW.getSpawnLocation();
             player.teleport(defSpawnLocation);
         }
