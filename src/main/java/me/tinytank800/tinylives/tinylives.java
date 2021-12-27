@@ -870,6 +870,9 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(player.hasPermission("tinylives.resetall")) {
                             player.sendMessage(ChatColor.GREEN + "/TinyLives resetall " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Reset all players lives. This forces all players to new life amounts.");
                         }
+                        if(player.hasPermission("tinylives.resetallextra")) {
+                            player.sendMessage(ChatColor.GREEN + "/TinyLives resetallextra " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Reset all players extra lives.");
+                        }
                         if(player.hasPermission("tinylives.reset")) {
                             player.sendMessage(ChatColor.GREEN + "/TinyLives reset (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Resets a specific players lives.");
                         }
@@ -1021,24 +1024,37 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                 int random_num = (int)Math.floor(Math.random()*(max-min+1)+min);
 
                                 customConfig.get().set("players." + key + ".lives", random_num);
-                                if(customConfig.get().contains("players." + key + ".extra-lives")){
-                                    customConfig.get().set("players." + key + ".extra-lives", 0);
-                                }
                             } else {
                                 if(customConfig.get().contains("players." + key + ".max-lives")){
                                     customConfig.get().set("players." + key + ".lives", customConfig.get().getInt("players." + key + ".max-lives"));
                                 } else {
                                     customConfig.get().set("players." + key + ".lives", tinylives.getInstance().lives);
                                 }
-
-                                if(customConfig.get().contains("players." + key + ".extra-lives")){
-                                    customConfig.get().set("players." + key + ".extra-lives", 0);
-                                }
                             }
                         }
                         customConfig.save();
 
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',PPrefix + "&eYou have reset everyones lives."));
+                        return true;
+                    }
+
+                    //-----------------------------------RESET(ALLEXTRA)-----------------------------------//
+                    else if (args[0].equalsIgnoreCase("resetallextra")) {
+                        if(!player.hasPermission("tinylives.resetallextra")){
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "You do not have permission!");
+                            return true;
+                        }
+
+                        Object[] playerKeys = customConfig.get().getConfigurationSection("players").getKeys(false).toArray();
+
+                        for (Object key : playerKeys){
+                            if(customConfig.get().contains("players." + key + ".extra-lives")){
+                                customConfig.get().set("players." + key + ".extra-lives", 0);
+                            }
+                        }
+                        customConfig.save();
+
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&',PPrefix + "&eYou have reset everyones extra lives."));
                         return true;
                     }
 
@@ -1479,6 +1495,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         getLogger().info(ChatColor.GREEN + "/TinyLives info " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Lists the your lives and how long till reset.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives respawn (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Respawn a player to full lives if they have died.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives resetall " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Reset all players lives. This forces all players to new life amounts.");
+                        getLogger().info(ChatColor.GREEN + "/TinyLives resetallextra " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Reset all players extra lives.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives reset (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Resets a specific players lives.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives debug " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Enables/Disables debug mode.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives addlife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Adds 1 life to specific player.");
@@ -1558,6 +1575,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                             return true;
                         }
                     }
+
                     //-----------------------------------RESET(ALL)-----------------------------------//
                     else if (args[0].equalsIgnoreCase("resetall")) {
                         Object[] playerKeys = customConfig.get().getConfigurationSection("players").getKeys(false).toArray();
@@ -1569,24 +1587,32 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                 int random_num = (int)Math.floor(Math.random()*(max-min+1)+min);
 
                                 customConfig.get().set("players." + key + ".lives", random_num);
-                                if(customConfig.get().contains("players." + key + ".extra-lives")){
-                                    customConfig.get().set("players." + key + ".extra-lives", 0);
-                                }
                             } else {
                                 if(customConfig.get().contains("players." + key + ".max-lives")){
                                     customConfig.get().set("players." + key + ".lives", customConfig.get().getInt("players." + key + ".max-lives"));
                                 } else {
                                     customConfig.get().set("players." + key + ".lives", tinylives.getInstance().lives);
                                 }
-
-                                if(customConfig.get().contains("players." + key + ".extra-lives")){
-                                    customConfig.get().set("players." + key + ".extra-lives", 0);
-                                }
                             }
                         }
                         customConfig.save();
 
                         getLogger().info(ChatColor.translateAlternateColorCodes('&',PPrefix + "&eYou have reset everyones lives."));
+                        return true;
+                    }
+
+                    //-----------------------------------RESET(ALLEXTRA)-----------------------------------//
+                    else if (args[0].equalsIgnoreCase("resetallextra")) {
+                        Object[] playerKeys = customConfig.get().getConfigurationSection("players").getKeys(false).toArray();
+
+                        for (Object key : playerKeys){
+                            if(customConfig.get().contains("players." + key + ".extra-lives")){
+                                customConfig.get().set("players." + key + ".extra-lives", 0);
+                            }
+                        }
+                        customConfig.save();
+
+                        getLogger().info(ChatColor.translateAlternateColorCodes('&',PPrefix + "&eYou have reset everyones extra lives."));
                         return true;
                     }
 
