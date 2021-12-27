@@ -294,6 +294,19 @@ message-settings:
 
 
 
+##Would you like to use mySQL to sync data between servers?
+##NOT FUNCTIONAL YET
+MySQL:
+  enabled: false
+  host: "localhost"
+  port: "3306"
+  database: "tinylives"
+  username: "root"
+  password: ""
+
+
+
+
 ##This gives info about whats going on in the plugin.
 ##This is helpful for if you are getting errors and dont know why.
 ##This also helps me give you support when a bug is happening.

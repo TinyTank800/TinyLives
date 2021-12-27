@@ -3,9 +3,7 @@ package me.tinytank800.tinylives;
 import me.tinytank800.tinylives.files.SpigotExpansion;
 import me.tinytank800.tinylives.files.customConfig;
 import me.tinytank800.tinylives.files.livesConfig;
-import me.tinytank800.tinylives.utilities.ChatUtil;
-import me.tinytank800.tinylives.utilities.PlayerUtil;
-import me.tinytank800.tinylives.utilities.UpdateChecker;
+import me.tinytank800.tinylives.utilities.*;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,6 +19,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -92,6 +91,10 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
     public boolean PAPIintall = false;
 
+    public MySQL SQL;
+    public SQLGetter data;
+    public boolean enableSQL = false;
+
     @Override
     public void onEnable() {
 
@@ -110,6 +113,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
              */
             getLogger().warning("Could not find PlaceholderAPI! This plugin is required for placeholder and message usage! The plugin will still function without it.");
             //Bukkit.getPluginManager().disablePlugin(this);
+            Bukkit.getPluginManager().registerEvents(this, this);
         }
 
         new UpdateChecker(this, 92276).getVersion(version -> {
@@ -213,6 +217,25 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
         //plugin = this;
 
         setInstance(this);
+
+        this.SQL = new MySQL();
+        this.data = new SQLGetter();
+
+        SQL.setup();
+
+        if(enableSQL) {
+            try {
+                SQL.connect();
+            } catch (ClassNotFoundException | SQLException e) {
+                //e.printStackTrace();
+                ChatUtil.console("Database not connected.", 0);
+            }
+
+            if (SQL.isConnected()) {
+                ChatUtil.console("Database is connected.", 0);
+                data.createTable();
+            }
+        }
 
         if(enableDeadmans) {
             new WorldCreator(deadmansWorld).createWorld();
@@ -559,6 +582,8 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
     @Override
     public void onDisable() {
+        SQL.disconnect();
+
         getLogger().info("Tiny Lives is now disabled.");
     }
 
@@ -576,10 +601,8 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
             Player player = ev.getPlayer();
 
             PlayerUtil.PlayerJoin(player);
-            PlayerUtil.getMaxLivesAmount(player, 0);
-            ChatUtil.console("" + PlayerUtil.getMaxLivesAmount(player, 0), 2);
         } else {
-            ChatUtil.console((ev.getPlayer().getName() + " Is not in the correct world. Not running join logic."), 0);
+            ChatUtil.console((ev.getPlayer().getName() + " Is not in the correct world. Not running join logic."), 2);
         }
     }
 
@@ -817,6 +840,8 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
         perLifeRespawn = getConfig().getBoolean("life-settings.per-life-respawn.enabled");
         perLifeRespawnTime = getConfig().getInt("life-settings.per-life-respawn.time");
+
+        enableSQL = getConfig().getBoolean("MySQL.enabled");
     }
 
     @Override
@@ -843,7 +868,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                             player.sendMessage(ChatColor.GREEN + "/TinyLives respawn (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Respawn a player to full lives if they have died.");
                         }
                         if(player.hasPermission("tinylives.resetall")) {
-                            player.sendMessage(ChatColor.GREEN + "/TinyLives resetall " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Reset all players lives. This forces a reset and can take up to 10min to trigger.");
+                            player.sendMessage(ChatColor.GREEN + "/TinyLives resetall " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Reset all players lives. This forces all players to new life amounts.");
                         }
                         if(player.hasPermission("tinylives.reset")) {
                             player.sendMessage(ChatColor.GREEN + "/TinyLives reset (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Resets a specific players lives.");
@@ -986,11 +1011,34 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "You do not have permission!");
                             return true;
                         }
-                        customConfig.get().set("current-delay", 2);
-                        customConfig.save();
-                        customConfig.reload();
 
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&',PPrefix + "&eYou have triggered a reset. This can take up to a minute to actually trigger."));
+                        Object[] playerKeys = customConfig.get().getConfigurationSection("players").getKeys(false).toArray();
+
+                        for (Object key : playerKeys){
+                            if(tinylives.getInstance().getConfig().getBoolean("life-settings.random-lives.enabled")) {
+                                int min = tinylives.getInstance().getConfig().getInt("life-settings.random-lives.min-lives");
+                                int max = tinylives.getInstance().getConfig().getInt("life-settings.random-lives.max-lives");
+                                int random_num = (int)Math.floor(Math.random()*(max-min+1)+min);
+
+                                customConfig.get().set("players." + key + ".lives", random_num);
+                                if(customConfig.get().contains("players." + key + ".extra-lives")){
+                                    customConfig.get().set("players." + key + ".extra-lives", 0);
+                                }
+                            } else {
+                                if(customConfig.get().contains("players." + key + ".max-lives")){
+                                    customConfig.get().set("players." + key + ".lives", customConfig.get().getInt("players." + key + ".max-lives"));
+                                } else {
+                                    customConfig.get().set("players." + key + ".lives", tinylives.getInstance().lives);
+                                }
+
+                                if(customConfig.get().contains("players." + key + ".extra-lives")){
+                                    customConfig.get().set("players." + key + ".extra-lives", 0);
+                                }
+                            }
+                        }
+                        customConfig.save();
+
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&',PPrefix + "&eYou have reset everyones lives."));
                         return true;
                     }
 
@@ -1014,6 +1062,88 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                             saveConfig();
                             reloadConfig();
                             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Debug mode is now on!");
+                            return true;
+                        }
+                    }
+
+                    //-----------------------------------SET-MAX-LIVES-----------------------------------//
+                    else if (args[0].equalsIgnoreCase("setmaxlives")) {
+                        if(args.length >= 3){
+                            if (Bukkit.getPlayer(args[1]) != null) {
+                                Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                try {
+                                    lifeAmount = Integer.parseInt(args[2]);
+                                } catch (NumberFormatException ignored){
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not a valid number!");
+                                    return true;
+                                }
+                                ChatUtil.console("Player found", 2);
+                                if(customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())){
+                                    ChatUtil.console("Player config found", 2);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".max-lives", lifeAmount);
+                                    customConfig.save();
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given " + TargetPlayer.getName() + " " + lifeAmount + " more max lives!");
+                                } else {
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".respawning", false);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".dead", false);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", lives);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + "max-lives", lifeAmount);
+                                    customConfig.save();
+
+                                    PlayerUtil.SetDisplayName(TargetPlayer);
+
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max lives or number given will push them past max!");
+                                    return true;
+                                }
+                            } else {
+                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not a valid player!");
+                                return true;
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not the correct usage! /TinyLives setmaxlives (Player) (Amount)");
+                            return true;
+                        }
+                    }
+
+                    //-----------------------------------SET-MAX-EXTRA-LIVES-----------------------------------//
+                    else if (args[0].equalsIgnoreCase("setmaxextralives")) {
+                        if(args.length >= 3){
+                            if (Bukkit.getPlayer(args[1]) != null) {
+                                Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                try {
+                                    lifeAmount = Integer.parseInt(args[2]);
+                                } catch (NumberFormatException ignored){
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not a valid number!");
+                                    return true;
+                                }
+                                ChatUtil.console("Player found", 2);
+                                if(customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())){
+                                    ChatUtil.console("Player config found", 2);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".max-extra-lives", lifeAmount);
+                                    customConfig.save();
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given " + TargetPlayer.getName() + " " + lifeAmount + " more max extra lives!");
+                                } else {
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".respawning", false);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".dead", false);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", lives);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + "max-extra-lives", lifeAmount);
+                                    customConfig.save();
+
+                                    PlayerUtil.SetDisplayName(TargetPlayer);
+
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max lives or number given will push them past max!");
+                                    return true;
+                                }
+                            } else {
+                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not a valid player!");
+                                return true;
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not the correct usage! /TinyLives setmaxextralives (Player) (Amount)");
                             return true;
                         }
                     }
@@ -1348,7 +1478,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         getLogger().info(ChatColor.GREEN + "/TinyLives lives " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Tells you how many lives you have left.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives info " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Lists the your lives and how long till reset.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives respawn (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Respawn a player to full lives if they have died.");
-                        getLogger().info(ChatColor.GREEN + "/TinyLives resetall " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Reset all players lives. This forces a reset and can take up to 10min to trigger.");
+                        getLogger().info(ChatColor.GREEN + "/TinyLives resetall " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Reset all players lives. This forces all players to new life amounts.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives reset (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Resets a specific players lives.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives debug " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Enables/Disables debug mode.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives addlife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Adds 1 life to specific player.");
@@ -1430,11 +1560,33 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                     }
                     //-----------------------------------RESET(ALL)-----------------------------------//
                     else if (args[0].equalsIgnoreCase("resetall")) {
-                        customConfig.get().set("current-delay", 2);
-                        customConfig.save();
-                        customConfig.reload();
+                        Object[] playerKeys = customConfig.get().getConfigurationSection("players").getKeys(false).toArray();
 
-                        getLogger().info(ChatColor.translateAlternateColorCodes('&',PPrefix + "&eYou have triggered a reset. This can take up to 1 minute to actually trigger."));
+                        for (Object key : playerKeys){
+                            if(tinylives.getInstance().getConfig().getBoolean("life-settings.random-lives.enabled")) {
+                                int min = tinylives.getInstance().getConfig().getInt("life-settings.random-lives.min-lives");
+                                int max = tinylives.getInstance().getConfig().getInt("life-settings.random-lives.max-lives");
+                                int random_num = (int)Math.floor(Math.random()*(max-min+1)+min);
+
+                                customConfig.get().set("players." + key + ".lives", random_num);
+                                if(customConfig.get().contains("players." + key + ".extra-lives")){
+                                    customConfig.get().set("players." + key + ".extra-lives", 0);
+                                }
+                            } else {
+                                if(customConfig.get().contains("players." + key + ".max-lives")){
+                                    customConfig.get().set("players." + key + ".lives", customConfig.get().getInt("players." + key + ".max-lives"));
+                                } else {
+                                    customConfig.get().set("players." + key + ".lives", tinylives.getInstance().lives);
+                                }
+
+                                if(customConfig.get().contains("players." + key + ".extra-lives")){
+                                    customConfig.get().set("players." + key + ".extra-lives", 0);
+                                }
+                            }
+                        }
+                        customConfig.save();
+
+                        getLogger().info(ChatColor.translateAlternateColorCodes('&',PPrefix + "&eYou have reset everyones lives."));
                         return true;
                     }
 
@@ -1453,6 +1605,88 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                             saveConfig();
                             reloadConfig();
                             getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Debug mode is now on!");
+                            return true;
+                        }
+                    }
+
+                    //-----------------------------------SET-MAX-LIVES-----------------------------------//
+                    else if (args[0].equalsIgnoreCase("setmaxlives")) {
+                        if(args.length >= 3){
+                            if (Bukkit.getPlayer(args[1]) != null) {
+                                Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                try {
+                                    lifeAmount = Integer.parseInt(args[2]);
+                                } catch (NumberFormatException ignored){
+                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not a valid number!");
+                                    return true;
+                                }
+                                ChatUtil.console("Player found", 2);
+                                if(customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())){
+                                    ChatUtil.console("Player config found", 2);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".max-lives", lifeAmount);
+                                    customConfig.save();
+                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given " + TargetPlayer.getName() + " " + lifeAmount + " more max lives!");
+                                } else {
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".respawning", false);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".dead", false);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", lives);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + "max-lives", lifeAmount);
+                                    customConfig.save();
+
+                                    PlayerUtil.SetDisplayName(TargetPlayer);
+
+                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max lives or number given will push them past max!");
+                                    return true;
+                                }
+                            } else {
+                                getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not a valid player!");
+                                return true;
+                            }
+                        } else {
+                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not the correct usage! /TinyLives setmaxlives (Player) (Amount)");
+                            return true;
+                        }
+                    }
+
+                    //-----------------------------------SET-MAX-EXTRA-LIVES-----------------------------------//
+                    else if (args[0].equalsIgnoreCase("setmaxextralives")) {
+                        if(args.length >= 3){
+                            if (Bukkit.getPlayer(args[1]) != null) {
+                                Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                int lifeAmount = 0;
+                                try {
+                                    lifeAmount = Integer.parseInt(args[2]);
+                                } catch (NumberFormatException ignored){
+                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not a valid number!");
+                                    return true;
+                                }
+                                ChatUtil.console("Player found", 2);
+                                if(customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())){
+                                    ChatUtil.console("Player config found", 2);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".max-extra-lives", lifeAmount);
+                                    customConfig.save();
+                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given " + TargetPlayer.getName() + " " + lifeAmount + " more max extra lives!");
+                                } else {
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".respawning", false);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".dead", false);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", lives);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".current-reset", resetNumber);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + "max-extra-lives", lifeAmount);
+                                    customConfig.save();
+
+                                    PlayerUtil.SetDisplayName(TargetPlayer);
+
+                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Player is already on max lives or number given will push them past max!");
+                                    return true;
+                                }
+                            } else {
+                                getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not a valid player!");
+                                return true;
+                            }
+                        } else {
+                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Not the correct usage! /TinyLives setmaxextralives (Player) (Amount)");
                             return true;
                         }
                     }

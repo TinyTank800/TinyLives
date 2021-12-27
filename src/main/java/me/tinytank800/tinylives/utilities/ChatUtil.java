@@ -180,11 +180,12 @@ public class ChatUtil {
         for (Player players : Bukkit.getOnlinePlayers()) {
             for (String string : messageList) {
                 String message2Send = "";
-                if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                if (tinylives.getInstance().PAPIintall) {
                     message2Send = org.bukkit.ChatColor.translateAlternateColorCodes('&', PlaceholderAPI.setPlaceholders(player, string));
                 } else {
                     message2Send = org.bukkit.ChatColor.translateAlternateColorCodes('&', string);
                 }
+
                 if (!tinylives.getInstance().centeredText) {
                     player.sendMessage(message2Send);
                 } else {
@@ -198,7 +199,7 @@ public class ChatUtil {
         for (Player player : Bukkit.getOnlinePlayers()) {
             String fTitle = "";
             String fSubTitle = "";
-            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            if (tinylives.getInstance().PAPIintall) {
                 fTitle = org.bukkit.ChatColor.translateAlternateColorCodes('&', PlaceholderAPI.setPlaceholders(player, title));
                 fSubTitle = org.bukkit.ChatColor.translateAlternateColorCodes('&', PlaceholderAPI.setPlaceholders(player, subTitle));
             } else {
@@ -244,7 +245,7 @@ public class ChatUtil {
 
         BossBar bar = null;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            if (tinylives.getInstance().PAPIintall) {
                 bar = Bukkit.createBossBar(PlaceholderAPI.setPlaceholders(player, fMessage),bColor,bStyle);
             } else {
                 bar = Bukkit.createBossBar(fMessage,bColor,bStyle);
@@ -262,7 +263,7 @@ public class ChatUtil {
     public void sendActionBarMsg(String message){
         String fMessage = org.bukkit.ChatColor.translateAlternateColorCodes('&', message);
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            if (tinylives.getInstance().PAPIintall) {
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(PlaceholderAPI.setPlaceholders(player, fMessage)));
             } else {
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(fMessage));

@@ -373,7 +373,7 @@ public class PlayerUtil {
         return correctWorld;
     }
 
-    public static int getMaxLivesAmount(Player player, int defaultValue) {
+    public static int getMaxLivesPermAmount(Player player) {
         String permissionPrefix = "tinylives.maxlives.";
 
         for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
@@ -383,7 +383,31 @@ public class PlayerUtil {
             }
         }
 
-        return defaultValue;
+        return tinylives.getInstance().lives;
+    }
+
+    public static void checkMaxLivesAmount(Player player){
+        int permAmount = getMaxLivesPermAmount(player);
+        int currentAmount = 0;
+        if(customConfig.get().contains("players." + player.getUniqueId().toString() + ".max-lives")){
+            currentAmount = customConfig.get().getInt("players." + player.getUniqueId().toString() + ".max-lives");
+        }
+
+        if(currentAmount < permAmount){
+            customConfig.get().set("players." + player.getUniqueId().toString() + ".max-lives", permAmount);
+        }
+    }
+
+    public static void checkMaxExtraLivesAmount(Player player){
+        int permAmount = getMaxExtraLivesPermAmount(player);
+        int currentAmount = 0;
+        if(customConfig.get().contains("players." + player.getUniqueId().toString() + ".max-extra-lives")){
+            currentAmount = customConfig.get().getInt("players." + player.getUniqueId().toString() + ".max-extra-lives");
+        }
+
+        if(currentAmount < permAmount){
+            customConfig.get().set("players." + player.getUniqueId().toString() + ".max-extra-lives", permAmount);
+        }
     }
 
     public static boolean getEndless(Player player) {
@@ -401,7 +425,7 @@ public class PlayerUtil {
 //        return false;
     }
 
-    public static int getMaxExtraLivesAmount(Player player, int defaultValue) {
+    public static int getMaxExtraLivesPermAmount(Player player) {
         String permissionPrefix = "tinylives.maxextralives.";
 
         for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
@@ -411,7 +435,7 @@ public class PlayerUtil {
             }
         }
 
-        return defaultValue;
+        return 0;
     }
 
     public static void PlayerAssassinCheck(Player player) {
@@ -453,6 +477,11 @@ public class PlayerUtil {
     public static void PlayerJoin(Player player){
         //customConfig.reload();
 
+        //SQL player entry
+        if(tinylives.getInstance().enableSQL && tinylives.getInstance().SQL.isConnected()) {
+            tinylives.getInstance().data.createPlayer(player);
+        }
+
         if (customConfig.get().getConfigurationSection("players." + player.getUniqueId().toString()) == null) {
             if(tinylives.getInstance().getConfig().getBoolean("life-settings.random-lives.enabled")) {
                 int min = tinylives.getInstance().getConfig().getInt("life-settings.random-lives.min-lives");
@@ -473,8 +502,8 @@ public class PlayerUtil {
             customConfig.get().set("players." + player.getUniqueId().toString() + ".startedpvp", false);
             customConfig.get().set("players." + player.getUniqueId().toString() + ".respawn-time", 1200);
             customConfig.get().set("players." + player.getUniqueId().toString() + ".endless", getEndless(player));
-            customConfig.get().set("players." + player.getUniqueId().toString() + ".max-lives", getMaxLivesAmount(player,tinylives.getInstance().getConfig().getInt("life-settings.lives")));
-            customConfig.get().set("players." + player.getUniqueId().toString() + ".max-extra-lives", getMaxExtraLivesAmount(player,tinylives.getInstance().getConfig().getInt("life-settings.extra-lives.max-extra-lives")));
+            checkMaxExtraLivesAmount(player);
+            checkMaxLivesAmount(player);
             customConfig.get().set("players." + player.getUniqueId().toString() + ".cooldown", false);
             customConfig.get().set("players." + player.getUniqueId().toString() + ".InCombat", false);
             customConfig.get().set("players." + player.getUniqueId().toString() + ".IsAssassin", false);
@@ -495,8 +524,8 @@ public class PlayerUtil {
             }
         } else { // Player exists
             customConfig.get().set("players." + player.getUniqueId().toString() + ".playername", player.getName());
-            customConfig.get().set("players." + player.getUniqueId().toString() + ".max-lives", getMaxLivesAmount(player,tinylives.getInstance().getConfig().getInt("life-settings.lives")));
-            customConfig.get().set("players." + player.getUniqueId().toString() + ".max-extra-lives", getMaxExtraLivesAmount(player,tinylives.getInstance().getConfig().getInt("life-settings.extra-lives.max-extra-lives")));
+            checkMaxLivesAmount(player);
+            checkMaxExtraLivesAmount(player);
             customConfig.get().set("players." + player.getUniqueId().toString() + ".endless", getEndless(player));
             customConfig.get().set("players." + player.getUniqueId().toString() + ".cooldown", false);
             //customConfig.save();

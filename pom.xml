@@ -6,7 +6,7 @@
 
     <groupId>me.tinytank800</groupId>
     <artifactId>tinylives</artifactId>
-    <version>3.1.5</version>
+    <version>3.2.0</version>
     <packaging>jar</packaging>
 
     <name>tinylives</name>
