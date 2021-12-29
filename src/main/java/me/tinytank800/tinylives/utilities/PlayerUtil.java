@@ -209,6 +209,10 @@ public class PlayerUtil {
         //player.setHealth(0);
         player.spigot().respawn();
 
+        if(CheckPlayerDeadWorld(player)){
+            MoveWorld(player, 1);
+        }
+
         Bukkit.getScheduler().runTaskLater(tinylives.getInstance(), new Runnable() {
             @Override
             public void run() {
@@ -294,6 +298,47 @@ public class PlayerUtil {
         }, 5L);
 
         customConfig.save();
+    }
+
+    public static void respawnPlayer(Player player){
+        if(CheckPlayerWorld(player)){
+            if(customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".dead")){
+                if(customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") >= 1){
+                    customConfig.get().set("players." + player.getUniqueId().toString() + ".respawning", true);
+                    if(tinylives.getInstance().getConfig().getBoolean("life-settings.respawn-cooldown.enabled")){
+                        customConfig.get().set("players." + player.getUniqueId().toString() + ".cooldown", true);
+
+                        Bukkit.getScheduler().runTaskLater(tinylives.getInstance(), new Runnable() {
+                            @Override
+                            public void run() {
+                                customConfig.get().set("players." + player.getUniqueId().toString() + ".cooldown", false);
+                            }
+                        }, tinylives.getInstance().getConfig().getInt("life-settings.respawn-cooldown.time"));
+                    }
+
+                    ChangeGamemode(player, 1);
+                    player.spigot().respawn();
+
+                    if(CheckPlayerDeadWorld(player)){
+                        MoveWorld(player, 1);
+                    }
+
+                    customConfig.get().set("players." + player.getUniqueId().toString() + ".respawning", false);
+                    customConfig.get().set("players." + player.getUniqueId().toString() + ".dead", false);
+                    customConfig.save();
+
+                    SetDisplayName(player);
+
+                    if(tinylives.getInstance().getConfig().getBoolean("message-settings.messages.player-reset.enabled")) {
+                        ChatUtil.NotifyPlayerBlock(tinylives.getInstance().getConfig().getStringList("message-settings.messages.player-reset.messages"), player);
+                    }
+
+                    if(tinylives.getInstance().getConfig().getBoolean("message-settings.titles.reset-title.enabled")) {
+                        ChatUtil.NotifyPlayerTitle(player, tinylives.getInstance().getConfig().getString("message-settings.titles.reset-title.title"), tinylives.getInstance().getConfig().getString("message-settings.titles.reset-title.subTitle"), tinylives.getInstance().getConfig().getInt("message-settings.titles.reset-title.fadeIn"), tinylives.getInstance().getConfig().getInt("message-settings.titles.reset-title.stay"), tinylives.getInstance().getConfig().getInt("message-settings.titles.reset-title.fadeOut"));
+                    }
+                }
+            }
+        }
     }
 
     public static void MoveWorld(Player player, int PWorld){

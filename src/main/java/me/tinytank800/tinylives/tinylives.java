@@ -1034,6 +1034,10 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         }
                         customConfig.save();
 
+                        for (Player Aplayer : Bukkit.getOnlinePlayers()) {
+                            PlayerUtil.respawnPlayer(Aplayer);
+                        }
+
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',PPrefix + "&eYou have reset everyones lives."));
                         return true;
                     }
@@ -1596,6 +1600,10 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                             }
                         }
                         customConfig.save();
+
+                        for (Player Aplayer : Bukkit.getOnlinePlayers()) {
+                            PlayerUtil.respawnPlayer(Aplayer);
+                        }
 
                         getLogger().info(ChatColor.translateAlternateColorCodes('&',PPrefix + "&eYou have reset everyones lives."));
                         return true;
