@@ -139,7 +139,7 @@ public class PlayerUtil {
         SetDisplayName(player);
 
         if(tinylives.getInstance().getConfig().getBoolean("death-settings.enable-death-tp")){
-            if(!customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".endless")) {
+            if(!customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".endless") || !tinylives.getInstance().getConfig().getBoolean("life-settings.enable-endless-lives")) {
                 Location location = new Location(Bukkit.getWorld(tinylives.getInstance().defaultWorld), livesConfig.get().getInt("lives." + customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") + ".tp.x"), livesConfig.get().getInt("lives." + customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") + ".tp.y"), livesConfig.get().getInt("lives." + customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") + ".tp.z"));
                 player.teleport(location);
                 ChatUtil.console("Teleporting player", 0);
@@ -157,6 +157,7 @@ public class PlayerUtil {
                 kickSPlayer(player);
             } else if (tinylives.getInstance().enableDeadmans) {
                 if (!CheckPlayerDeadWorld(player)) {
+                    ChatUtil.NotifyPlayerString(ChatUtil.format(tinylives.getInstance().getConfig().getString("death-types.deadman-world.move-message"), player), player);
                     MoveWorld(player, 2);
                 }
             } else if (tinylives.getInstance().ghostPlayers) {
@@ -176,6 +177,7 @@ public class PlayerUtil {
                         kickSPlayer(player);
                     } else if (tinylives.getInstance().enableDeadmans) {
                         if (!CheckPlayerDeadWorld(player)) {
+                            ChatUtil.NotifyPlayerString(ChatUtil.format(tinylives.getInstance().getConfig().getString("death-types.deadman-world.move-message"), player), player);
                             MoveWorld(player, 2);
                         }
                     } else if (tinylives.getInstance().ghostPlayers) {
@@ -347,7 +349,7 @@ public class PlayerUtil {
             if(DefWorld == null){
                 ChatUtil.console("DEFAULT WORLD WAS NOT FOUND!", 1);
             }
-            ChatUtil.console((player + " Is being moved to the main world!"), 0);
+            ChatUtil.console((player.getName() + " Is being moved to the main world!"), 0);
             Location defSpawnLocation = DefWorld.getSpawnLocation();
             player.teleport(defSpawnLocation);
         } else if(PWorld == 2){ //Move to deadmans world
@@ -400,7 +402,7 @@ public class PlayerUtil {
             }
         }
 
-        if(tinylives.getInstance().getConfig().getString("death-types.deadman-world.deadman-world-name").equals(world)){
+        if(tinylives.getInstance().getConfig().getString("death-types.deadman-world.deadman-world-name").toLowerCase().equals(world)){
             correctWorld = true;
         }
 
@@ -411,7 +413,7 @@ public class PlayerUtil {
         boolean correctWorld = false;
         String world = player.getWorld().getName().toLowerCase().toString();
 
-        if(tinylives.getInstance().getConfig().getString("death-types.deadman-world.deadman-world-name").equals(world)){
+        if(tinylives.getInstance().getConfig().getString("death-types.deadman-world.deadman-world-name").toLowerCase().equals(world)){
             correctWorld = true;
         }
 
@@ -421,11 +423,19 @@ public class PlayerUtil {
     public static int getMaxLivesPermAmount(Player player) {
         String permissionPrefix = "tinylives.maxlives.";
 
+        int highestMax = 0;
         for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
             if (attachmentInfo.getPermission().startsWith(permissionPrefix)) {
                 String permission = attachmentInfo.getPermission();
-                return Integer.parseInt(permission.substring(permission.lastIndexOf(".") + 1));
+                int permLives = Integer.parseInt(permission.substring(permission.lastIndexOf(".") + 1));
+                if( permLives > highestMax){
+                    highestMax = permLives;
+                }
             }
+        }
+
+        if(highestMax != 0){
+            return highestMax;
         }
 
         return tinylives.getInstance().lives;
@@ -457,27 +467,33 @@ public class PlayerUtil {
 
     public static boolean getEndless(Player player) {
         String permissionPrefix = "tinylives.endless";
+        if(!tinylives.getInstance().getConfig().contains("life-settings.enable-endless-lives")){
+            tinylives.getInstance().getConfig().set("life-settings.enable-endless-lives", false);
+        }
 
-         return player.hasPermission(permissionPrefix);
-
-//        for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
-//            if (attachmentInfo.getPermission().startsWith(permissionPrefix)) {
-//                String permission = attachmentInfo.getPermission();
-//                return true;
-//            }
-//        }
-//
-//        return false;
+        if(tinylives.getInstance().getConfig().getBoolean("life-settings.enable-endless-lives")){
+            return player.hasPermission(permissionPrefix);
+        } else {
+            return false;
+        }
     }
 
     public static int getMaxExtraLivesPermAmount(Player player) {
         String permissionPrefix = "tinylives.maxextralives.";
 
+        int highestMax = 0;
         for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
             if (attachmentInfo.getPermission().startsWith(permissionPrefix)) {
                 String permission = attachmentInfo.getPermission();
-                return Integer.parseInt(permission.substring(permission.lastIndexOf(".") + 1));
+                int permLives = Integer.parseInt(permission.substring(permission.lastIndexOf(".") + 1));
+                if( permLives > highestMax){
+                    highestMax = permLives;
+                }
             }
+        }
+
+        if(highestMax != 0){
+            return highestMax;
         }
 
         return 0;
@@ -625,5 +641,6 @@ public class PlayerUtil {
         PlayerAssassinCheck(player);
 
         customConfig.save();
+        customConfig.reload();
     }
 }

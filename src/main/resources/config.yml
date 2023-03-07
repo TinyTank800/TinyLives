@@ -48,6 +48,7 @@ life-settings:
     enabled: false
     time: 200
   lives: 3 #Number of lives you want each player to have. Default 3 lives. This also acts as a default max. Can be bypasses with max lives perm.
+  enable-endless-lives: false #Do you want endless lives to be enabled? All ops will get it unless tinylives.endless is set to false in perm manager.
   random-lives:
     ##Give players random lives on join and after respawns.
     enabled: false
@@ -191,6 +192,7 @@ death-settings:
 
 #Settings for pvp stuff.
 pvp-settings:
+  disable-combat-state: true #Do you want the entered and exited to NOT be a thing.
   punish-combat-log: false #Removes 1 life from players who disconnect during combat.
   combat-timer: 1200 #Time in ticks the player stays in combat (Default 1200 ticks 60 seconds).
   messages:
@@ -211,6 +213,7 @@ pvp-settings:
 
 
 ## Settings to do with worlds.
+## THESE SETTINGS ARE CASE SENSITIVE SO MAKE SURE YOU USE THE CORRECT CASE!
 world-settings:
   #Main world should be set to the world all living players are in or the main survival world.
   main-world: "world"
@@ -315,6 +318,9 @@ MySQL:
 ## 1: Simple Info
 ## 2: Indepth Info - these spam console much more.
 debug: 0
+
+set-fight-cancel-false: false
+set-fight-cancel-true: false
 
 
 

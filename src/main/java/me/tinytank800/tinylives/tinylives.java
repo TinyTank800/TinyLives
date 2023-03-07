@@ -608,7 +608,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent ev) {
-        if(getConfig().getBoolean("pvp-settings.punish-combat-log")){
+        if(tinylives.getInstance().getConfig().getBoolean("pvp-settings.punish-combat-log")){
             Player player = ev.getPlayer();
 
             if(customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".InCombat")){
@@ -622,65 +622,78 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
     @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent e) {
-        if(e.getEntity() instanceof Player){
-            Player player = (Player) e.getEntity();
-            if(customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".cooldown")){
-                e.setCancelled(true);
-                return;
-            }
-        }
-
-        if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
-            Player player = (Player) e.getEntity();
-
-            if(customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".startedpvp")){
-                if(!livesConfig.get().getBoolean("lives." + customConfig.get().getInt("players." + e.getDamager().getUniqueId().toString() + ".lives") + ".fightback")){
-                    if(tinylives.getInstance().getConfig().getBoolean("pvp-settings.messages.cantfightback.enabled")) {
-                        ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.cantfightback"), (Player) e.getDamager());
+        //ChatUtil.console("Check", 1);
+        if (!tinylives.getInstance().getConfig().getBoolean("pvp-settings.disable-combat-state")) {
+            //ChatUtil.console("Running Combat", 1);
+            if(e.getEntity() instanceof Player) {
+                Player player = (Player) e.getEntity();
+                if (customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".cooldown")) {
+                    if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-true")) {
+                        e.setCancelled(true);
                     }
-
-                    e.setCancelled(true);
                     return;
                 }
-            } else {
-                if(!livesConfig.get().getBoolean("lives." + customConfig.get().getInt("players." + e.getDamager().getUniqueId().toString() + ".lives") + ".startpvp")){
-                    if(tinylives.getInstance().getConfig().getBoolean("pvp-settings.messages.cantstart.enabled")) {
-                        ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.cantstart"), (Player) e.getDamager());
-                    }
+            }
 
-                    e.setCancelled(true);
-                    return;
-                } else {
-                    if(!customConfig.get().getBoolean("players." + e.getDamager().getUniqueId().toString() + ".startedpvp")) {
-                        customConfig.get().set("players." + e.getDamager().getUniqueId().toString() + ".startedpvp", true);
-                        customConfig.get().set("players." + e.getDamager().getUniqueId().toString() + ".InCombat", true);
-                        customConfig.get().set("players." + player.getUniqueId().toString() + ".InCombat", true);
-                        //customConfig.save();
-                        //customConfig.reload();
-                        if(tinylives.getInstance().getConfig().getBoolean("pvp-settings.messages.entered.enabled")) {
-                            ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.entered.message"), (Player) e.getDamager());
+
+            if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
+                Player player = (Player) e.getEntity();
+
+                if (customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".startedpvp")) {
+                    if (!livesConfig.get().getBoolean("lives." + customConfig.get().getInt("players." + e.getDamager().getUniqueId().toString() + ".lives") + ".fightback")) {
+                        if (tinylives.getInstance().getConfig().getBoolean("pvp-settings.messages.cantfightback.enabled")) {
+                            ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.cantfightback"), (Player) e.getDamager());
                         }
 
-                        new BukkitRunnable() {
-                            public void run() {
-                                customConfig.get().set("players." + e.getDamager().getUniqueId().toString() + ".startedpvp", false);
-                                customConfig.get().set("players." + e.getDamager().getUniqueId().toString() + ".InCombat", false);
-                                customConfig.get().set("players." + player.getUniqueId().toString() + ".InCombat", false);
-                                //customConfig.save();
-                                //customConfig.reload();
-                                if(tinylives.getInstance().getConfig().getBoolean("pvp-settings.messages.exited.enabled")) {
-                                    ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.exited.message"), (Player) e.getDamager());
-                                }
-                            }
-                        }.runTaskLater(tinylives.getInstance(), tinylives.getInstance().getConfig().getInt("pvp-settings.combat-timer"));
+                        if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-true")) {
+                            e.setCancelled(true);
+                        }
+                        return;
+                    }
+                } else {
+                    if (!livesConfig.get().getBoolean("lives." + customConfig.get().getInt("players." + e.getDamager().getUniqueId().toString() + ".lives") + ".startpvp")) {
+                        if (tinylives.getInstance().getConfig().getBoolean("pvp-settings.messages.cantstart.enabled")) {
+                            ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.cantstart"), (Player) e.getDamager());
+                        }
 
-                        customConfig.save();
+                        if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-true")) {
+                            e.setCancelled(true);
+                        }
+
+                        return;
+                    } else {
+                        if (!customConfig.get().getBoolean("players." + e.getDamager().getUniqueId().toString() + ".startedpvp")) {
+                            customConfig.get().set("players." + e.getDamager().getUniqueId().toString() + ".startedpvp", true);
+                            customConfig.get().set("players." + e.getDamager().getUniqueId().toString() + ".InCombat", true);
+                            customConfig.get().set("players." + player.getUniqueId().toString() + ".InCombat", true);
+                            //customConfig.save();
+                            //customConfig.reload();
+                            if (tinylives.getInstance().getConfig().getBoolean("pvp-settings.messages.entered.enabled")) {
+                                ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.entered.message"), (Player) e.getDamager());
+                            }
+
+                            new BukkitRunnable() {
+                                public void run() {
+                                    customConfig.get().set("players." + e.getDamager().getUniqueId().toString() + ".startedpvp", false);
+                                    customConfig.get().set("players." + e.getDamager().getUniqueId().toString() + ".InCombat", false);
+                                    customConfig.get().set("players." + player.getUniqueId().toString() + ".InCombat", false);
+                                    //customConfig.save();
+                                    //customConfig.reload();
+                                    if (tinylives.getInstance().getConfig().getBoolean("pvp-settings.messages.exited.enabled")) {
+                                        ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.exited.message"), (Player) e.getDamager());
+                                    }
+                                }
+                            }.runTaskLater(tinylives.getInstance(), tinylives.getInstance().getConfig().getInt("pvp-settings.combat-timer"));
+
+                            customConfig.save();
+                        }
                     }
                 }
             }
+            if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-false")) {
+                e.setCancelled(false);
+            }
         }
-
-        e.setCancelled(false);
     }
 
     @EventHandler
@@ -1179,15 +1192,15 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
                                 int lifeAmount = 0;
-                                    try {
-                                        if(args.length >= 3) {
-                                            lifeAmount = Integer.parseInt(args[2]);
-                                        } else {
-                                            lifeAmount = 1;
-                                        }
-                                    } catch (NumberFormatException ignored) {
+                                try {
+                                    if(args.length >= 3) {
+                                        lifeAmount = Integer.parseInt(args[2]);
+                                    } else {
                                         lifeAmount = 1;
                                     }
+                                } catch (NumberFormatException ignored) {
+                                    lifeAmount = 1;
+                                }
                                 if(customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())){
                                     if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + lifeAmount <= customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-lives")){
                                         if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") > 0) {
@@ -1319,7 +1332,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
                     //-----------------------------------ADDEXTRALIFE-----------------------------------//
                     else if (args[0].equalsIgnoreCase("addextralife")) {
-                        if (!player.hasPermission("tinylives.removeextralife")) {
+                        if (!player.hasPermission("tinylives.addextralife")) {
                             player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "You do not have permission!");
                             return true;
                         }
@@ -1338,7 +1351,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     lifeAmount = 1;
                                 }
                                 if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())) {
-                                    if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives")) {
+                                    if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") && customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString() + ".max-extra-lives")) {
                                         if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") + lifeAmount <= customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-extra-lives")){
                                             customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives") + lifeAmount);
                                             customConfig.save();
@@ -1350,6 +1363,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                         }
                                     } else {
                                         customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".extra-lives", lifeAmount);
+                                        PlayerUtil.checkMaxExtraLivesAmount(TargetPlayer);
                                         customConfig.save();
                                         player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "You have given " + lifeAmount +" extra lives to " + TargetPlayer.getName().toString() + "!");
                                         return true;
