@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -719,6 +720,25 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                 if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.success.title.enabled")) {
                     ChatUtil.NotifyPlayerTitle(killer, tinylives.getInstance().getConfig().getString("assassin.titles.success.title.title"), tinylives.getInstance().getConfig().getString("assassin.titles.success.title.subTitle"), tinylives.getInstance().getConfig().getInt("assassin.titles.success.title.fadeIn"), tinylives.getInstance().getConfig().getInt("assassin.titles.success.title.stay"), tinylives.getInstance().getConfig().getInt("assassin.titles.success.title.fadeOut"));
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+        String fromWorldName = event.getFrom().getName();
+        String toWorldName = event.getPlayer().getWorld().getName();
+        Player player = event.getPlayer();
+
+        if(PlayerUtil.CheckPlayerDeadWorld(player)){
+            return;
+        }
+
+        if(PlayerUtil.CheckPlayerWorld(player)){
+            if(customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") >= 1){
+                PlayerUtil.ChangeGamemode(player, 1);
+            } else {
+                PlayerUtil.ChangeGamemode(player, 2);
             }
         }
     }
