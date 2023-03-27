@@ -613,9 +613,14 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
             Player player = ev.getPlayer();
 
             if(customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".InCombat")){
-                customConfig.get().set("players." + player.getUniqueId().toString() + ".lives",customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") - 1);
-                customConfig.save();
-                //customConfig.reload();
+                if(customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") == 1){
+                    PlayerUtil.KillPlayer(player);
+                } else {
+                    customConfig.get().set("players." + player.getUniqueId().toString() + ".lives",customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") - 1);
+                    customConfig.save();
+                    //customConfig.reload();
+                }
+
                 ChatUtil.console("Player has been punished for combat logging.", 0);
             }
         }
@@ -744,8 +749,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent e)
-    {
+    public void onPlayerDeath(PlayerDeathEvent e) {
 
         Player player = Bukkit.getPlayer(e.getEntity().getUniqueId());
         if(player != null) {
