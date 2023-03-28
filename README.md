@@ -21,3 +21,6 @@ Please report bugs, issues or request features [here](https://github.com/TinyTan
 
 # **Spigot Page**
 You can find the spigot page for the plugin [here](https://www.spigotmc.org/resources/tiny-lives.92276/).
+
+# **Looking to support me?**
+Consider joining the [Okami Squadron discord server](https://discord.com/invite/CttmxfttzC)! We also offer memberships for those looking to support us further!
