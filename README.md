@@ -2,7 +2,7 @@
 
 # **About**
 
-Want to give your players a challenge? Why not limit the lives they get like hardcore but maybe with a few more lives. Well this plugin is for you. Inspired by the popular series called the 3rd Life(Third Life/Last Life) Series by Grian, this plugin takes the idea and makes it usable on spigot servers with tons of customization and not limited to 3 lives!
+Want to give your players a challenge? Why not limit the lives they get like hardcore but with a twist! Inspired by the popular series called the 3rd Life(Third Life/Last Life/Limited Life) Series by Grian, this plugin takes those ideas and makes it usable on spigot servers with tons of customization and is not limited to 3 lives!
 
 * Lightweight
 * PlaceholderAPI support
