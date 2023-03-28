@@ -14,7 +14,7 @@ Want to give your players a challenge? Why not limit the lives they get like har
 You can join the discord server for support [here](https://discord.com/invite/JFQK2aQNXr). This is the main and fastest way to receive support for the plugin.
 
 # **Wiki Page**
-You can find the TinyLives Wiki page WILL CHANGE! [here](https://www.okamisquadron.com/wikis/tinylives). The wiki page contains all the features and how to use them.
+You can find the TinyLives Wiki page WILL CHANGE! [here](https://tinytank800.gitbook.io/tinytank800-wiki/). The wiki page contains all the features and how to use them.
 
 # **Bug Reports**
 Please report bugs, issues or request features [here](https://github.com/TinyTank800/TinyLives/issues).
