@@ -634,9 +634,9 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
             if(e.getEntity() instanceof Player) {
                 Player player = (Player) e.getEntity();
                 if (customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".cooldown")) {
-                    if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-true")) {
-                        e.setCancelled(true);
-                    }
+                    //if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-true")) {
+                    e.setCancelled(true);
+                    //}
                     return;
                 }
             }
@@ -648,23 +648,23 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                 if (customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".startedpvp")) {
                     if (!livesConfig.get().getBoolean("lives." + customConfig.get().getInt("players." + e.getDamager().getUniqueId().toString() + ".lives") + ".fightback")) {
                         if (tinylives.getInstance().getConfig().getBoolean("pvp-settings.messages.cantfightback.enabled")) {
-                            ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.cantfightback"), (Player) e.getDamager());
+                            ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.cantfightback.message"), (Player) e.getDamager());
                         }
 
-                        if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-true")) {
-                            e.setCancelled(true);
-                        }
+                        //if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-true")) {
+                        e.setCancelled(true);
+                        //}
                         return;
                     }
                 } else {
                     if (!livesConfig.get().getBoolean("lives." + customConfig.get().getInt("players." + e.getDamager().getUniqueId().toString() + ".lives") + ".startpvp")) {
                         if (tinylives.getInstance().getConfig().getBoolean("pvp-settings.messages.cantstart.enabled")) {
-                            ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.cantstart"), (Player) e.getDamager());
+                            ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("pvp-settings.messages.cantstart.message"), (Player) e.getDamager());
                         }
 
-                        if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-true")) {
-                            e.setCancelled(true);
-                        }
+                        //if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-true")) {
+                        e.setCancelled(true);
+                        //}
 
                         return;
                     } else {
@@ -696,9 +696,9 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                     }
                 }
             }
-            if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-false")) {
-                e.setCancelled(false);
-            }
+            //if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-false")) {
+            e.setCancelled(false);
+            //}
         }
     }
 
@@ -1488,8 +1488,8 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                 if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())) {
                                     if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString() + ".lives")) {
                                         if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") >= 1){
-                                            if(!(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") >= lives)) {
-                                                if(customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") >= 1) {
+                                            if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") < customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-lives")) {
+                                                if(customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") > 1) {
                                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + 1);
                                                     customConfig.get().set("players." + player.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") - 1);
                                                     customConfig.save();
@@ -2067,8 +2067,8 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())) {
                             if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString() + ".lives")) {
                                 if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") >= 1){
-                                    if(!(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") >= lives)) {
-                                        if(customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") >= 1) {
+                                    if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") < customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".max-lives")) {
+                                        if(customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") > 1) {
                                             customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") + 1);
                                             customConfig.get().set("players." + player.getUniqueId().toString() + ".lives", customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") - 1);
                                             customConfig.save();

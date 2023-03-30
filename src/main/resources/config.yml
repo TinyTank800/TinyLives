@@ -192,7 +192,7 @@ death-settings:
 
 #Settings for pvp stuff.
 pvp-settings:
-  disable-combat-state: true #Do you want the entered and exited to NOT be a thing.
+  disable-combat-state: true #Do you want the entered and exited to NOT be a thing. THIS ALSO DISABLES THE CAN START PVP AND CAN FIGHT BACK LIFE FUNCTIONS!
   punish-combat-log: false #Removes 1 life from players who disconnect during combat.
   combat-timer: 1200 #Time in ticks the player stays in combat (Default 1200 ticks 60 seconds).
   messages:
@@ -318,9 +318,6 @@ MySQL:
 ## 1: Simple Info
 ## 2: Indepth Info - these spam console much more.
 debug: 0
-
-set-fight-cancel-false: false
-set-fight-cancel-true: false
 
 
 

@@ -561,7 +561,7 @@ public class PlayerUtil {
             customConfig.get().set("players." + player.getUniqueId().toString() + ".dead", false);
             customConfig.get().set("players." + player.getUniqueId().toString() + ".respawning", false);
             customConfig.get().set("players." + player.getUniqueId().toString() + ".startedpvp", false);
-            customConfig.get().set("players." + player.getUniqueId().toString() + ".respawn-time", 1200);
+            customConfig.get().set("players." + player.getUniqueId().toString() + ".respawn-time", tinylives.getInstance().allDeathDelay);
             customConfig.get().set("players." + player.getUniqueId().toString() + ".endless", getEndless(player));
             checkMaxExtraLivesAmount(player);
             checkMaxLivesAmount(player);

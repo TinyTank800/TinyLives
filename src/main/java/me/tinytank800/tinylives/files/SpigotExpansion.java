@@ -96,17 +96,17 @@ public class SpigotExpansion extends PlaceholderExpansion {
 
         if(params.equals("info_sec")){
             if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-types.all-death.enabled")){
-                double number = (customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".respawn-time")/20.00);
+                double number = ((double)customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".respawn-time")/20.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
             } else if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-types.add-lives.enabled")){
-                double number = (customConfig.get().getInt("addlife-current-delay") / 20.00);
+                double number = ((double)customConfig.get().getInt("addlife-current-delay") / 20.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
             } else {
-                double number = (customConfig.get().getInt("current-delay")/20.00);
+                double number = ((double)customConfig.get().getInt("current-delay")/20.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
@@ -115,17 +115,17 @@ public class SpigotExpansion extends PlaceholderExpansion {
 
         if(params.equals("info_min")){
             if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-types.all-death.enabled")){
-                double number = (customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".respawn-time")/1200.00);
+                double number = ((double)customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".respawn-time")/1200.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
             } else if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-types.add-lives.enabled")){
-                double number =(customConfig.get().getInt("addlife-current-delay")/1200.00);
+                double number =((double)customConfig.get().getInt("addlife-current-delay")/1200.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
             } else {
-                double number =(customConfig.get().getInt("current-delay")/1200.00);
+                double number =((double)customConfig.get().getInt("current-delay")/1200.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
@@ -134,17 +134,17 @@ public class SpigotExpansion extends PlaceholderExpansion {
 
         if(params.equals("info_hour")){
             if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-types.all-death.enabled")){
-                double number = (customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".respawn-time")/72000.00);
+                double number = ((double)customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".respawn-time")/72000.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
             } else if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-types.add-lives.enabled")){
-                double number = (customConfig.get().getInt("addlife-current-delay")/72000.00);
+                double number = ((double)customConfig.get().getInt("addlife-current-delay")/72000.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
             } else {
-                double number = (customConfig.get().getInt("current-delay")/72000.00);
+                double number = ((double)customConfig.get().getInt("current-delay")/72000.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
@@ -153,17 +153,17 @@ public class SpigotExpansion extends PlaceholderExpansion {
 
         if(params.equals("info_day")){
             if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-types.all-death.enabled")){
-                double number = (customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".respawn-time") / 1728000.00);
+                double number = ((double)customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".respawn-time") / 1728000.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
             } else if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-types.add-lives.enabled")){
-                double number = (customConfig.get().getInt("addlife-current-delay")/1728000.00);
+                double number = ((double)customConfig.get().getInt("addlife-current-delay")/1728000.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number).toString();
                 return (output.toString());
             } else {
-                double number = (customConfig.get().getInt("current-delay")/1728000.00);
+                double number = ((double)customConfig.get().getInt("current-delay")/1728000.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
