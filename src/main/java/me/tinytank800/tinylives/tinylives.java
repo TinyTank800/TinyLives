@@ -4,6 +4,7 @@ import me.tinytank800.tinylives.files.SpigotExpansion;
 import me.tinytank800.tinylives.files.customConfig;
 import me.tinytank800.tinylives.files.livesConfig;
 import me.tinytank800.tinylives.utilities.*;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,18 +29,31 @@ import java.util.UUID;
 
 public final class tinylives extends JavaPlugin implements CommandExecutor, Listener {
 
-    //NOTES
-    // Try to add countdown for choosing.
-    // Add reminder timer for assassins.
-    // Log player deaths/life losses.
     // Limited pvp kills per player
     // Clean up configs a bit.
-    // REWORK time left placeholders
 
-    // Add sounds for each announcement and thing like assassins - Done
-    // Make kill message for when someone dies to an assassin. - Done
-    // Add per life death cooldowns. - Done
-    // Add player based assassin - done
+    /*
+
+    TODO HIGH ------
+         Add the Allow-Dead-Givelife to the givelife commands. Already inside config.yml under world settings.
+
+    TODO MEDIUM ------
+        Add lifesteal
+
+    TODO LOW ------
+        Offline player commands. Loop through players.yml to find a user and change lives/reset/whatever while offline.
+        Log player deaths/life losses.
+        Try to add countdown for choosing.
+        Add reminder timer for assassins.
+
+    TODO OVERTIME ------
+        Auto complete commands. This will take a while.
+
+    FINISHED ------
+        Add Gamemode bypass perm toggle under world settings. already added to the on world change.
+        Add manual way to set assassin.
+
+     */
 
     //tinylives plugin;
 
@@ -124,6 +138,9 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                 getLogger().info("There is a new update available! MAKE SURE TO READ CHANGES WHEN UPDATING! Update at https://www.spigotmc.org/resources/tiny-lives.92276/");
             }
         });
+
+        int pluginId = 18125; // <-- Replace with the id of your plugin!
+        Metrics metrics = new Metrics(this, pluginId);
 
         this.getCommand("tl").setExecutor(this);
         this.getCommand("tinylives").setExecutor(this);
@@ -740,6 +757,9 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
         }
 
         if(PlayerUtil.CheckPlayerWorld(player)){
+            if (tinylives.getInstance().getConfig().getBoolean("world-settings.enable-gamemode-bypass") && player.hasPermission("tinylives.gamemode.bypass")){
+                return;
+            }
             if(customConfig.get().getInt("players." + player.getUniqueId().toString() + ".lives") >= 1){
                 PlayerUtil.ChangeGamemode(player, 1);
             } else {
@@ -912,6 +932,9 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         }
                         if(player.hasPermission("tinylives.reset")) {
                             player.sendMessage(ChatColor.GREEN + "/TinyLives reset (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Resets a specific players lives.");
+                        }
+                        if(player.hasPermission("tinylives.assassin")) {
+                            player.sendMessage(ChatColor.GREEN + "/TinyLives assassin(player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Make a player an assassin.");
                         }
                         if(player.hasPermission("tinylives.debug")) {
                             player.sendMessage(ChatColor.GREEN + "/TinyLives debug " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Enables/Disables debug mode.");
@@ -1475,6 +1498,79 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         }
                     }
 
+                    //-----------------------------------Manual Assassin-----------------------------------//
+                    else if (args[0].equalsIgnoreCase("assassin")) {
+                        if (!player.hasPermission("tinylives.assassin")) {
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "You do not have permission!");
+                            return true;
+                        }
+
+                        if(!tinylives.getInstance().getConfig().getBoolean("assassin.enabled") || !tinylives.getInstance().getConfig().getBoolean("assassin.manual.enabled")){
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Assassin manual is not enabled!");
+                            return true;
+                        }
+
+                        if(tinylives.getInstance().getConfig().getBoolean("assassin.enabled") && tinylives.getInstance().getConfig().getBoolean("assassin.manual.random")){
+                            List<Player> onlinePlayers = new ArrayList<Player>(Bukkit.getOnlinePlayers());
+                            int min = 0;
+                            int max = onlinePlayers.size();
+                            int random_int = (int) Math.floor(Math.random() * (max - min + 1) + min);
+                            Player TargetPlayer = onlinePlayers.get(random_int - 1);
+
+                            if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") <= 0){
+                                random_int = (int) Math.floor(Math.random() * (max - min + 1) + min);
+                                TargetPlayer = onlinePlayers.get(random_int - 1);
+                            }
+
+                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".IsAssassin", true);
+                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".AssassinTime", tinylives.getInstance().getConfig().getInt("assassin.manual.time"));
+
+                            ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("assassin.titles.chosen.message"), TargetPlayer);
+                            if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.sound.enabled")) {
+                                PlayerUtil.sendSound(TargetPlayer, tinylives.getInstance().getConfig().getString("assassin.titles.chosen.sound.sound"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.sound.pitch"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.sound.volume"));
+                            }
+                            if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.title.enabled")) {
+                                ChatUtil.NotifyPlayerTitle(TargetPlayer, tinylives.getInstance().getConfig().getString("assassin.titles.chosen.title.title"), tinylives.getInstance().getConfig().getString("assassin.titles.chosen.title.subTitle"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.fadeIn"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.stay"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.fadeOut"));
+                            }
+
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Player is now an assassin!");
+                            return true;
+                        }
+
+                        if(args.length >= 2) {
+                            if (Bukkit.getPlayer(args[1]) != null) {
+                                Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                assert TargetPlayer != null;
+                                if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())) {
+
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".IsAssassin", true);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".AssassinTime", tinylives.getInstance().getConfig().getInt("assassin.manual.time"));
+
+                                    ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("assassin.titles.chosen.message"), TargetPlayer);
+                                    if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.sound.enabled")) {
+                                        PlayerUtil.sendSound(TargetPlayer, tinylives.getInstance().getConfig().getString("assassin.titles.chosen.sound.sound"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.sound.pitch"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.sound.volume"));
+                                    }
+                                    if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.title.enabled")) {
+                                        ChatUtil.NotifyPlayerTitle(TargetPlayer, tinylives.getInstance().getConfig().getString("assassin.titles.chosen.title.title"), tinylives.getInstance().getConfig().getString("assassin.titles.chosen.title.subTitle"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.fadeIn"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.stay"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.fadeOut"));
+                                    }
+
+                                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Player is now an assassin!");
+                                    return true;
+
+                                } else {
+                                    ChatUtil.console("PLAYER WHO WAS SELECTED HAS NO CONFIG VALUES", 1);
+                                }
+                            } else {
+                                player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid player! /TinyLives assassin (player)");
+                                return true;
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid usage! /TinyLives assassin (player)");
+                            return true;
+                        }
+                    }
+                    //-----------------------------------Manual Assassin-----------------------------------//
+
                     //-----------------------------------GIVELIFE-----------------------------------//
                     else if (args[0].equalsIgnoreCase("givelife")) {
                         if (!player.hasPermission("tinylives.givelife")) {
@@ -1539,6 +1635,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         getLogger().info(ChatColor.GREEN + "/TinyLives resetall " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Reset all players lives. This forces all players to new life amounts.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives resetallextra " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Reset all players extra lives.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives reset (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Resets a specific players lives.");
+                        getLogger().info(ChatColor.GREEN + "/TinyLives assassin (player) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Make a player an assassin.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives debug " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Enables/Disables debug mode.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives addlife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Adds 1 life to specific player.");
                         getLogger().info(ChatColor.GREEN + "/TinyLives removelife (player) (amount) " + ChatColor.GRAY + "-" + ChatColor.BLUE + " Removes 1 life from specific player.");

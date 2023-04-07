@@ -70,6 +70,13 @@ assassin:
   enabled: false #Disabling this makes assassins not be chosen.
   gain-lives: false #Do assassins gain lives on kills? Kinda like stealing the persons life they took.
   ##------TYPES-------
+  manual:
+    ##Player assassin. This gives a chance to become on. They will have till they log off to kill someone if chosen.
+    enabled: false
+    ##Time they have to kill someone. Default 4 hours 288000
+    time: 288000
+    ##Enabling this will select a random player instead of the player you use in the command.
+    random: false
   player:
     ##Player assassin. This gives a chance to become on. They will have till they log off to kill someone if chosen.
     enabled: false
@@ -217,6 +224,10 @@ pvp-settings:
 world-settings:
   #Main world should be set to the world all living players are in or the main survival world.
   main-world: "world"
+  ##Would you like to allow dead players to be revived using /givelife from another player? --STILL IN DEVELOPMENT
+  ##allow-dead-givelife: false --STILL IN DEVELOPMENT
+  ##Would you like people with the perm tinylives.gamemode.bypass to be able to skip the gamemode change on world change?
+  enable-gamemode-bypass: false
   ##Enabled worlds. These are the worlds you want affected by the plugin or
   ##Which worlds lives should be taken on death.
   enabled-worlds:

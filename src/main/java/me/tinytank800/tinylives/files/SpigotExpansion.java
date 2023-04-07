@@ -105,6 +105,11 @@ public class SpigotExpansion extends PlaceholderExpansion {
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
+            } else if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-settings.per-life-respawn.enabled")){
+                double number =((double)customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".per-life-respawn")/20.00);
+                DecimalFormat format = new DecimalFormat("0.00");
+                String output = format.format(number);
+                return (output.toString());
             } else {
                 double number = ((double)customConfig.get().getInt("current-delay")/20.00);
                 DecimalFormat format = new DecimalFormat("0.00");
@@ -121,6 +126,11 @@ public class SpigotExpansion extends PlaceholderExpansion {
                 return (output.toString());
             } else if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-types.add-lives.enabled")){
                 double number =((double)customConfig.get().getInt("addlife-current-delay")/1200.00);
+                DecimalFormat format = new DecimalFormat("0.00");
+                String output = format.format(number);
+                return (output.toString());
+            } else if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-settings.per-life-respawn.enabled")){
+                double number =((double)customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".per-life-respawn")/1200.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
@@ -143,6 +153,11 @@ public class SpigotExpansion extends PlaceholderExpansion {
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number);
                 return (output.toString());
+            } else if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-settings.per-life-respawn.enabled")){
+                double number =((double)customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".per-life-respawn")/72000.00);
+                DecimalFormat format = new DecimalFormat("0.00");
+                String output = format.format(number);
+                return (output.toString());
             } else {
                 double number = ((double)customConfig.get().getInt("current-delay")/72000.00);
                 DecimalFormat format = new DecimalFormat("0.00");
@@ -161,6 +176,11 @@ public class SpigotExpansion extends PlaceholderExpansion {
                 double number = ((double)customConfig.get().getInt("addlife-current-delay")/1728000.00);
                 DecimalFormat format = new DecimalFormat("0.00");
                 String output = format.format(number).toString();
+                return (output.toString());
+            } else if(Bukkit.getServer().getPluginManager().getPlugin("tinylives").getConfig().getBoolean("life-settings.per-life-respawn.enabled")){
+                double number =((double)customConfig.get().getInt("players."+ player.getUniqueId().toString() + ".per-life-respawn")/1728000.00);
+                DecimalFormat format = new DecimalFormat("0.00");
+                String output = format.format(number);
                 return (output.toString());
             } else {
                 double number = ((double)customConfig.get().getInt("current-delay")/1728000.00);
