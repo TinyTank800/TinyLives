@@ -24,3 +24,5 @@ You can find the spigot page for the plugin [here](https://www.spigotmc.org/reso
 
 # **Looking to support me?**
 Consider joining the [Okami Squadron discord server](https://discord.com/servers/okami-squadron-714696925500145725)! We also offer memberships for those looking to support us further!
+
+[Bstats](https://bstats.org/signatures/bukkit/tiny-lives.svg)
