@@ -52,6 +52,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
     FINISHED ------
         Add Gamemode bypass perm toggle under world settings. already added to the on world change.
         Add manual way to set assassin.
+        Fixes to info placeholders
 
      */
 
@@ -1758,6 +1759,75 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         getLogger().info(ChatColor.translateAlternateColorCodes('&',PPrefix + "&eYou have reset everyones extra lives."));
                         return true;
                     }
+
+                    //-----------------------------------Manual Assassin-----------------------------------//
+                    else if (args[0].equalsIgnoreCase("assassin")) {
+
+                        if(!tinylives.getInstance().getConfig().getBoolean("assassin.enabled") || !tinylives.getInstance().getConfig().getBoolean("assassin.manual.enabled")){
+                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Assassin manual is not enabled!");
+                            return true;
+                        }
+
+                        if(tinylives.getInstance().getConfig().getBoolean("assassin.enabled") && tinylives.getInstance().getConfig().getBoolean("assassin.manual.random")){
+                            List<Player> onlinePlayers = new ArrayList<Player>(Bukkit.getOnlinePlayers());
+                            int min = 0;
+                            int max = onlinePlayers.size();
+                            int random_int = (int) Math.floor(Math.random() * (max - min + 1) + min);
+                            Player TargetPlayer = onlinePlayers.get(random_int - 1);
+
+                            if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") <= 0){
+                                random_int = (int) Math.floor(Math.random() * (max - min + 1) + min);
+                                TargetPlayer = onlinePlayers.get(random_int - 1);
+                            }
+
+                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".IsAssassin", true);
+                            customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".AssassinTime", tinylives.getInstance().getConfig().getInt("assassin.manual.time"));
+
+                            ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("assassin.titles.chosen.message"), TargetPlayer);
+                            if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.sound.enabled")) {
+                                PlayerUtil.sendSound(TargetPlayer, tinylives.getInstance().getConfig().getString("assassin.titles.chosen.sound.sound"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.sound.pitch"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.sound.volume"));
+                            }
+                            if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.title.enabled")) {
+                                ChatUtil.NotifyPlayerTitle(TargetPlayer, tinylives.getInstance().getConfig().getString("assassin.titles.chosen.title.title"), tinylives.getInstance().getConfig().getString("assassin.titles.chosen.title.subTitle"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.fadeIn"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.stay"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.fadeOut"));
+                            }
+
+                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Player is now an assassin!");
+                            return true;
+                        }
+
+                        if(args.length >= 2) {
+                            if (Bukkit.getPlayer(args[1]) != null) {
+                                Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                assert TargetPlayer != null;
+                                if (customConfig.get().contains("players." + TargetPlayer.getUniqueId().toString())) {
+
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".IsAssassin", true);
+                                    customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".AssassinTime", tinylives.getInstance().getConfig().getInt("assassin.manual.time"));
+
+                                    ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("assassin.titles.chosen.message"), TargetPlayer);
+                                    if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.sound.enabled")) {
+                                        PlayerUtil.sendSound(TargetPlayer, tinylives.getInstance().getConfig().getString("assassin.titles.chosen.sound.sound"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.sound.pitch"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.sound.volume"));
+                                    }
+                                    if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.title.enabled")) {
+                                        ChatUtil.NotifyPlayerTitle(TargetPlayer, tinylives.getInstance().getConfig().getString("assassin.titles.chosen.title.title"), tinylives.getInstance().getConfig().getString("assassin.titles.chosen.title.subTitle"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.fadeIn"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.stay"), tinylives.getInstance().getConfig().getInt("assassin.titles.chosen.title.fadeOut"));
+                                    }
+
+                                    getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.GREEN + "Player is now an assassin!");
+                                    return true;
+
+                                } else {
+                                    ChatUtil.console("PLAYER WHO WAS SELECTED HAS NO CONFIG VALUES", 1);
+                                }
+                            } else {
+                                getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid player! /TinyLives assassin (player)");
+                                return true;
+                            }
+                        } else {
+                            getLogger().info(ChatColor.translateAlternateColorCodes('&', PPrefix) + ChatColor.RED + "Invalid usage! /TinyLives assassin (player)");
+                            return true;
+                        }
+                    }
+                    //-----------------------------------Manual Assassin-----------------------------------//
 
                     //-----------------------------------DEBUG-----------------------------------//
                     else if (args[0].equalsIgnoreCase("debug")) {
