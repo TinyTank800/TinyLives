@@ -1514,13 +1514,13 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(tinylives.getInstance().getConfig().getBoolean("assassin.enabled") && tinylives.getInstance().getConfig().getBoolean("assassin.manual.random")){
                             List<Player> onlinePlayers = new ArrayList<Player>(Bukkit.getOnlinePlayers());
                             int min = 0;
-                            int max = onlinePlayers.size();
+                            int max = onlinePlayers.size() - 1;
                             int random_int = (int) Math.floor(Math.random() * (max - min + 1) + min);
-                            Player TargetPlayer = onlinePlayers.get(random_int - 1);
+                            Player TargetPlayer = onlinePlayers.get(random_int);
 
-                            if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") <= 0){
+                            while(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") <= 0){
                                 random_int = (int) Math.floor(Math.random() * (max - min + 1) + min);
-                                TargetPlayer = onlinePlayers.get(random_int - 1);
+                                TargetPlayer = onlinePlayers.get(random_int);
                             }
 
                             customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".IsAssassin", true);
@@ -1771,13 +1771,13 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(tinylives.getInstance().getConfig().getBoolean("assassin.enabled") && tinylives.getInstance().getConfig().getBoolean("assassin.manual.random")){
                             List<Player> onlinePlayers = new ArrayList<Player>(Bukkit.getOnlinePlayers());
                             int min = 0;
-                            int max = onlinePlayers.size();
+                            int max = onlinePlayers.size() - 1;
                             int random_int = (int) Math.floor(Math.random() * (max - min + 1) + min);
-                            Player TargetPlayer = onlinePlayers.get(random_int - 1);
+                            Player TargetPlayer = onlinePlayers.get(random_int);
 
                             if(customConfig.get().getInt("players." + TargetPlayer.getUniqueId().toString() + ".lives") <= 0){
                                 random_int = (int) Math.floor(Math.random() * (max - min + 1) + min);
-                                TargetPlayer = onlinePlayers.get(random_int - 1);
+                                TargetPlayer = onlinePlayers.get(random_int);
                             }
 
                             customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".IsAssassin", true);
