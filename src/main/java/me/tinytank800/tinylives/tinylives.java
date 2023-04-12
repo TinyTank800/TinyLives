@@ -563,7 +563,50 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                     customConfig.save();
                 }
             }, 20L, ScheduleDelay);
+        } else if(customConfig.get().getBoolean("assassin.enabled") && customConfig.get().getBoolean("assassin.manual.enabled")){
+            Bukkit.getScheduler().runTaskTimer(tinylives.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    ChatUtil.console("Trigger Manual Assassin loop", 2);
+
+                    if(customConfig.get().getConfigurationSection("players") == null){
+                        return;
+                    }
+                    Object[] playerKeys = customConfig.get().getConfigurationSection("players").getKeys(false).toArray();
+                    for (Object key : playerKeys){
+                        if(customConfig.get().contains("players."+key+".IsAssassin")){
+                            customConfig.get().set("players."+key+".AssassinTime", customConfig.get().getInt("players."+key+".AssassinTime") - ScheduleDelay);
+
+                            if(customConfig.get().getInt("players."+key+".AssassinTime") <= 0){
+                                UUID id = UUID.fromString(key.toString());
+                                Player player = Bukkit.getPlayer(id);
+                                assert player != null;
+
+                                ChatUtil.console("Taking assassin " + player.getName() + "'s life.", 0);
+                                customConfig.get().set("players." + key + ".IsAssassin", false);
+                                if (customConfig.get().getInt("players." + key + ".lives") <= 1) {
+                                    PlayerUtil.KillPlayer(player);
+                                } else {
+                                    customConfig.get().set("players." + key + ".lives", customConfig.get().getInt("players." + key + ".lives") - 1);
+                                }
+                                if(tinylives.getInstance().getConfig().getBoolean("assassin.titles.failed.sound.enabled")) {
+                                    PlayerUtil.sendSound(player, tinylives.getInstance().getConfig().getString("assassin.titles.failed.sound.sound"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.sound.pitch"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.sound.volume"));
+                                }
+
+                                ChatUtil.NotifyAllStringPlayer(tinylives.getInstance().getConfig().getString("assassin.titles.failed.message"), player);
+
+                                if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.failed.title.enabled")) {
+                                    ChatUtil.NotifyPlayerTitle(player, tinylives.getInstance().getConfig().getString("assassin.titles.failed.title.title"), tinylives.getInstance().getConfig().getString("assassin.titles.failed.title.subTitle"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.fadeIn"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.stay"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.fadeOut"));
+                                }
+                            }
+                        }
+                    }
+
+                    customConfig.save();
+                }
+            }, 20L, ScheduleDelay);
         }
+
 
         if(perLifeRespawn){
             Bukkit.getScheduler().runTaskTimer(tinylives.getInstance(), new Runnable() {
@@ -1853,6 +1896,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(args.length >= 3){
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                assert TargetPlayer != null;
                                 int lifeAmount = 0;
                                 try {
                                     lifeAmount = Integer.parseInt(args[2]);
@@ -1935,6 +1979,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         if(args.length >= 2) {
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
+                                assert TargetPlayer != null;
                                 int lifeAmount = 0;
                                 try {
                                     if(args.length >= 3) {
