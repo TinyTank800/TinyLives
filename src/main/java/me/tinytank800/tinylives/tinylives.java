@@ -425,7 +425,8 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
             ChatUtil.console("NO MODE SELECTED.", 0);
         }
 
-        if(customConfig.get().getBoolean("assassin.enabled") && customConfig.get().getBoolean("assassin.global.enabled")){
+        if(tinylives.getInstance().getConfig().getBoolean("assassin.enabled") && tinylives.getInstance().getConfig().getBoolean("assassin.global.enabled")){
+            ChatUtil.console("Setting up Global Check", 2);
             Bukkit.getScheduler().runTaskTimer(tinylives.getInstance(), new Runnable() {
                 @Override
                 public void run() {
@@ -447,7 +448,9 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                 if(customConfig.get().getBoolean("players."+key+".IsAssassin")) {
                                     UUID id = UUID.fromString(key.toString());
                                     Player player = Bukkit.getPlayer(id);
-                                    assert player != null;
+                                    if(player == null){
+                                        return;
+                                    }
 
                                     ChatUtil.console("Taking assassin " + player.getName() + "'s life.", 0);
                                     customConfig.get().set("players." + key + ".IsAssassin", false);
@@ -520,7 +523,10 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                     customConfig.save();
                 }
             }, 20L, ScheduleDelay);
-        } else if(customConfig.get().getBoolean("assassin.enabled") && customConfig.get().getBoolean("assassin.player.enabled")){
+        }
+
+        if(tinylives.getInstance().getConfig().getBoolean("assassin.enabled") && tinylives.getInstance().getConfig().getBoolean("assassin.player.enabled")){
+            ChatUtil.console("Setting up Player Check", 2);
             Bukkit.getScheduler().runTaskTimer(tinylives.getInstance(), new Runnable() {
                 @Override
                 public void run() {
@@ -532,29 +538,33 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                     Object[] playerKeys = customConfig.get().getConfigurationSection("players").getKeys(false).toArray();
                     for (Object key : playerKeys){
                         if(customConfig.get().contains("players."+key+".IsAssassin")){
-                            customConfig.get().set("players."+key+".AssassinTime", customConfig.get().getInt("players."+key+".AssassinTime") - ScheduleDelay);
-                            customConfig.get().set("players."+key+".AssassinCooldown", customConfig.get().getInt("players."+key+".AssassinCooldown") - ScheduleDelay);
+                            if(customConfig.get().getBoolean("players."+key+".IsAssassin")) {
+                                customConfig.get().set("players." + key + ".AssassinTime", customConfig.get().getInt("players." + key + ".AssassinTime") - ScheduleDelay);
+                                customConfig.get().set("players." + key + ".AssassinCooldown", customConfig.get().getInt("players." + key + ".AssassinCooldown") - ScheduleDelay);
 
-                            if(customConfig.get().getInt("players."+key+".AssassinTime") <= 0){
-                                UUID id = UUID.fromString(key.toString());
-                                Player player = Bukkit.getPlayer(id);
-                                assert player != null;
+                                if (customConfig.get().getInt("players." + key + ".AssassinTime") <= 0) {
+                                    UUID id = UUID.fromString(key.toString());
+                                    Player player = Bukkit.getPlayer(id);
+                                    if (player == null) {
+                                        return;
+                                    }
 
-                                ChatUtil.console("Taking assassin " + player.getName() + "'s life.", 0);
-                                customConfig.get().set("players." + key + ".IsAssassin", false);
-                                if (customConfig.get().getInt("players." + key + ".lives") <= 1) {
-                                    PlayerUtil.KillPlayer(player);
-                                } else {
-                                    customConfig.get().set("players." + key + ".lives", customConfig.get().getInt("players." + key + ".lives") - 1);
-                                }
-                                if(tinylives.getInstance().getConfig().getBoolean("assassin.titles.failed.sound.enabled")) {
-                                    PlayerUtil.sendSound(player, tinylives.getInstance().getConfig().getString("assassin.titles.failed.sound.sound"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.sound.pitch"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.sound.volume"));
-                                }
+                                    ChatUtil.console("Taking assassin " + player.getName() + "'s life.", 0);
+                                    customConfig.get().set("players." + key + ".IsAssassin", false);
+                                    if (customConfig.get().getInt("players." + key + ".lives") <= 1) {
+                                        PlayerUtil.KillPlayer(player);
+                                    } else {
+                                        customConfig.get().set("players." + key + ".lives", customConfig.get().getInt("players." + key + ".lives") - 1);
+                                    }
+                                    if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.failed.sound.enabled")) {
+                                        PlayerUtil.sendSound(player, tinylives.getInstance().getConfig().getString("assassin.titles.failed.sound.sound"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.sound.pitch"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.sound.volume"));
+                                    }
 
-                                ChatUtil.NotifyAllStringPlayer(tinylives.getInstance().getConfig().getString("assassin.titles.failed.message"), player);
+                                    ChatUtil.NotifyAllStringPlayer(tinylives.getInstance().getConfig().getString("assassin.titles.failed.message"), player);
 
-                                if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.failed.title.enabled")) {
-                                    ChatUtil.NotifyPlayerTitle(player, tinylives.getInstance().getConfig().getString("assassin.titles.failed.title.title"), tinylives.getInstance().getConfig().getString("assassin.titles.failed.title.subTitle"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.fadeIn"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.stay"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.fadeOut"));
+                                    if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.failed.title.enabled")) {
+                                        ChatUtil.NotifyPlayerTitle(player, tinylives.getInstance().getConfig().getString("assassin.titles.failed.title.title"), tinylives.getInstance().getConfig().getString("assassin.titles.failed.title.subTitle"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.fadeIn"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.stay"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.fadeOut"));
+                                    }
                                 }
                             }
                         }
@@ -563,7 +573,10 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                     customConfig.save();
                 }
             }, 20L, ScheduleDelay);
-        } else if(customConfig.get().getBoolean("assassin.enabled") && customConfig.get().getBoolean("assassin.manual.enabled")){
+        }
+
+        if(tinylives.getInstance().getConfig().getBoolean("assassin.enabled") && tinylives.getInstance().getConfig().getBoolean("assassin.manual.enabled")){
+            ChatUtil.console("Setting up Manual Check", 2);
             Bukkit.getScheduler().runTaskTimer(tinylives.getInstance(), new Runnable() {
                 @Override
                 public void run() {
@@ -575,28 +588,32 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                     Object[] playerKeys = customConfig.get().getConfigurationSection("players").getKeys(false).toArray();
                     for (Object key : playerKeys){
                         if(customConfig.get().contains("players."+key+".IsAssassin")){
-                            customConfig.get().set("players."+key+".AssassinTime", customConfig.get().getInt("players."+key+".AssassinTime") - ScheduleDelay);
+                            if(customConfig.get().getBoolean("players."+key+".IsAssassin")) {
+                                customConfig.get().set("players." + key + ".AssassinTime", customConfig.get().getInt("players." + key + ".AssassinTime") - ScheduleDelay);
 
-                            if(customConfig.get().getInt("players."+key+".AssassinTime") <= 0){
-                                UUID id = UUID.fromString(key.toString());
-                                Player player = Bukkit.getPlayer(id);
-                                assert player != null;
+                                if (customConfig.get().getInt("players." + key + ".AssassinTime") <= 0) {
+                                    UUID id = UUID.fromString(key.toString());
+                                    Player player = Bukkit.getPlayer(id);
+                                    if (player == null) {
+                                        return;
+                                    }
 
-                                ChatUtil.console("Taking assassin " + player.getName() + "'s life.", 0);
-                                customConfig.get().set("players." + key + ".IsAssassin", false);
-                                if (customConfig.get().getInt("players." + key + ".lives") <= 1) {
-                                    PlayerUtil.KillPlayer(player);
-                                } else {
-                                    customConfig.get().set("players." + key + ".lives", customConfig.get().getInt("players." + key + ".lives") - 1);
-                                }
-                                if(tinylives.getInstance().getConfig().getBoolean("assassin.titles.failed.sound.enabled")) {
-                                    PlayerUtil.sendSound(player, tinylives.getInstance().getConfig().getString("assassin.titles.failed.sound.sound"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.sound.pitch"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.sound.volume"));
-                                }
+                                    ChatUtil.console("Taking assassin " + player.getName() + "'s life.", 0);
+                                    customConfig.get().set("players." + key + ".IsAssassin", false);
+                                    if (customConfig.get().getInt("players." + key + ".lives") <= 1) {
+                                        PlayerUtil.KillPlayer(player);
+                                    } else {
+                                        customConfig.get().set("players." + key + ".lives", customConfig.get().getInt("players." + key + ".lives") - 1);
+                                    }
+                                    if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.failed.sound.enabled")) {
+                                        PlayerUtil.sendSound(player, tinylives.getInstance().getConfig().getString("assassin.titles.failed.sound.sound"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.sound.pitch"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.sound.volume"));
+                                    }
 
-                                ChatUtil.NotifyAllStringPlayer(tinylives.getInstance().getConfig().getString("assassin.titles.failed.message"), player);
+                                    ChatUtil.NotifyAllStringPlayer(tinylives.getInstance().getConfig().getString("assassin.titles.failed.message"), player);
 
-                                if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.failed.title.enabled")) {
-                                    ChatUtil.NotifyPlayerTitle(player, tinylives.getInstance().getConfig().getString("assassin.titles.failed.title.title"), tinylives.getInstance().getConfig().getString("assassin.titles.failed.title.subTitle"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.fadeIn"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.stay"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.fadeOut"));
+                                    if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.failed.title.enabled")) {
+                                        ChatUtil.NotifyPlayerTitle(player, tinylives.getInstance().getConfig().getString("assassin.titles.failed.title.title"), tinylives.getInstance().getConfig().getString("assassin.titles.failed.title.subTitle"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.fadeIn"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.stay"), tinylives.getInstance().getConfig().getInt("assassin.titles.failed.title.fadeOut"));
+                                    }
                                 }
                             }
                         }
@@ -694,6 +711,11 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
             //ChatUtil.console("Running Combat", 1);
             if(e.getEntity() instanceof Player) {
                 Player player = (Player) e.getEntity();
+
+                if(!PlayerUtil.CheckPlayerWorld(player)){
+                    return;
+                }
+
                 if (customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".cooldown")) {
                     //if (tinylives.getInstance().getConfig().getBoolean("set-fight-cancel-true")) {
                     e.setCancelled(true);
@@ -705,6 +727,10 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
             if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
                 Player player = (Player) e.getEntity();
+
+                if(!PlayerUtil.CheckPlayerWorld(player)){
+                    return;
+                }
 
                 if (customConfig.get().getBoolean("players." + player.getUniqueId().toString() + ".startedpvp")) {
                     if (!livesConfig.get().getBoolean("lives." + customConfig.get().getInt("players." + e.getDamager().getUniqueId().toString() + ".lives") + ".fightback")) {
@@ -767,6 +793,10 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
     public void onKill(PlayerDeathEvent e) {
         Player player = e.getEntity();
         Player killer = player.getKiller();
+
+        if(!PlayerUtil.CheckPlayerWorld(player)){
+            return;
+        }
 
         if(killer != null) {
             ChatUtil.console("Found killer", 0);
@@ -1555,6 +1585,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         }
 
                         if(tinylives.getInstance().getConfig().getBoolean("assassin.enabled") && tinylives.getInstance().getConfig().getBoolean("assassin.manual.random")){
+                            ChatUtil.console("Manual Random", 2);
                             List<Player> onlinePlayers = new ArrayList<Player>(Bukkit.getOnlinePlayers());
                             int min = 0;
                             int max = onlinePlayers.size() - 1;
@@ -1568,6 +1599,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
                             customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".IsAssassin", true);
                             customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".AssassinTime", tinylives.getInstance().getConfig().getInt("assassin.manual.time"));
+                            customConfig.save();
 
                             ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("assassin.titles.chosen.message"), TargetPlayer);
                             if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.sound.enabled")) {
@@ -1582,6 +1614,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                         }
 
                         if(args.length >= 2) {
+                            ChatUtil.console("Manual Player", 2);
                             if (Bukkit.getPlayer(args[1]) != null) {
                                 Player TargetPlayer = Bukkit.getPlayer(args[1]);
                                 assert TargetPlayer != null;
@@ -1589,6 +1622,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".IsAssassin", true);
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".AssassinTime", tinylives.getInstance().getConfig().getInt("assassin.manual.time"));
+                                    customConfig.save();
 
                                     ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("assassin.titles.chosen.message"), TargetPlayer);
                                     if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.sound.enabled")) {
@@ -1825,6 +1859,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
                             customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".IsAssassin", true);
                             customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".AssassinTime", tinylives.getInstance().getConfig().getInt("assassin.manual.time"));
+                            customConfig.save();
 
                             ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("assassin.titles.chosen.message"), TargetPlayer);
                             if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.sound.enabled")) {
@@ -1846,6 +1881,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".IsAssassin", true);
                                     customConfig.get().set("players." + TargetPlayer.getUniqueId().toString() + ".AssassinTime", tinylives.getInstance().getConfig().getInt("assassin.manual.time"));
+                                    customConfig.save();
 
                                     ChatUtil.NotifyPlayerString(tinylives.getInstance().getConfig().getString("assassin.titles.chosen.message"), TargetPlayer);
                                     if (tinylives.getInstance().getConfig().getBoolean("assassin.titles.chosen.sound.enabled")) {
