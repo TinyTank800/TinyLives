@@ -1,6 +1,6 @@
-![TinyLivesBanner](https://user-images.githubusercontent.com/22015094/147399768-76b02df6-ccc7-4bce-8d3f-c5d253bc0d1b.png)
+![TinyLivesBanner](https://cdn.discordapp.com/attachments/786130865545019402/1116459326572339273/TinylivesBanner.png)
 
-# **About**
+![AboutBanner](https://cdn.discordapp.com/attachments/786130865545019402/1116461533254389780/DescriptionBanner.png)
 
 Want to give your players a challenge? Why not limit the lives they get like hardcore but with a twist! Inspired by the popular series called the 3rd Life(Third Life/Last Life/Limited Life) Series by Grian, this plugin takes those ideas and makes it usable on spigot servers with tons of customization and is not limited to 3 lives!
 
