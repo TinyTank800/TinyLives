@@ -73,6 +73,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
     public String deadmansWorld = "";
     public String defaultWorld = "";
     public boolean enabledExtraLives = false;
+    public boolean countOfflineTime  = true;
     public int extraLives = 0;
     public boolean ghostPlayers = true;
 
@@ -143,6 +144,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
         int pluginId = 18125; // <-- Replace with the id of your plugin!
         Metrics metrics = new Metrics(this, pluginId);
 
+
         this.getCommand("tl").setExecutor(this);
         this.getCommand("tinylives").setExecutor(this);
         this.getCommand("lives").setExecutor(this);
@@ -152,12 +154,15 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
         getConfig().options().copyDefaults();
         saveDefaultConfig();
 
+        long currentTime = System.currentTimeMillis() / 50;
+
         loadConfig();
 
         customConfig.setup();
         customConfig.get().addDefault("current-delay", delay);
         customConfig.get().addDefault("reset-number", 0);
         customConfig.get().addDefault("addlife-current-delay", addLifeDelay);
+        customConfig.get().addDefault("last-offline-time", currentTime);
         customConfig.get().addDefault("assassin-cooldown", assassinGlobalCooldown);
         customConfig.get().addDefault("players", null);
         customConfig.get().options().copyDefaults(true);
@@ -260,6 +265,11 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
             new WorldCreator(deadmansWorld).createWorld();
         }
 
+        final long[] ticksSinceLastOffline  = {
+            (countOfflineTime) ?
+                currentTime - customConfig.get().getLong("last-offline-time") : 0
+        };
+
         if(addLifes){
             Bukkit.getScheduler().runTaskTimer(tinylives.getInstance(), new Runnable() {
                 @Override
@@ -333,10 +343,11 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
 
                     //Object[] playerKeys = customConfig.get().getConfigurationSection("players").getKeys(false).toArray();
 
+
                     for (Object key : playerKeys.getKeys(false)){
                         if(customConfig.get().getBoolean("players."+key+".dead")){
-                            int pTime = customConfig.get().getInt("players."+key+".respawn-time");
-                            if(pTime - ScheduleDelay <= 0){
+                            long pTime = customConfig.get().getLong("players."+key+".respawn-time");
+                            if(pTime - ScheduleDelay - ticksSinceLastOffline[0] <= 0){
                                 UUID id = UUID.fromString(key.toString());
                                 if(pTime != 0) {
                                     customConfig.get().set("players." + key + ".respawn-time", 0);
@@ -354,12 +365,14 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
                                     }
                                 }
                             } else {
-                                customConfig.get().set("players."+key+".respawn-time", pTime - ScheduleDelay);
+                                long newRespawnTime = pTime - ScheduleDelay - ticksSinceLastOffline[0];
+                                customConfig.get().set("players."+key+".respawn-time", newRespawnTime);
                             }
                         }
                     }
                     customConfig.save();
                     //customConfig.reload();
+                    ticksSinceLastOffline[0] = 0;
                 }
             }, 20L, ScheduleDelay);
         }
@@ -662,6 +675,7 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
     @Override
     public void onDisable() {
         SQL.disconnect();
+        customConfig.get().set("last-offline-time", System.currentTimeMillis() / 50);
 
         getLogger().info("Tiny Lives is now disabled.");
     }
@@ -960,6 +974,8 @@ public final class tinylives extends JavaPlugin implements CommandExecutor, List
         lives = getConfig().getInt("life-settings.lives");
         extraLives = getConfig().getInt("life-settings.extra-lives.max-extra-lives");
         enabledExtraLives = getConfig().getBoolean("life-settings.extra-lives.enabled");
+        countOfflineTime = getConfig().getBoolean("life-settings.count-offline-time");
+
 
         debug = getConfig().getInt("debug");
 
