@@ -60,7 +60,10 @@ life-settings:
     ##THEY ONLY CAN GAIN THEM FROM THE COMMAND. Does not reset on resets.
     enabled: false
     max-extra-lives: 2
-
+  count-offline-time: true
+    #Makes it so that the respawn timer keeps running when the server is offline
+    #(or, rather, that it calculates how much time has passed since it went offline on startup)
+    #Currently only implemented for all-death mode
 
 
 
