@@ -26,6 +26,13 @@ public final class Tinylives extends JavaPlugin implements Listener {
     private static Tinylives instance;
     private static Economy econ = null;
 
+    /*
+        Todo - Change hook system to just be held in memory on start.
+        @author - TinyTank800
+        @date - 7/24/2024
+        @time - 8:14 PM
+         */
+
     @Override
     public void onEnable() {
 
@@ -84,7 +91,7 @@ public final class Tinylives extends JavaPlugin implements Listener {
 
         TimerHandler.StartChecks();
 
-        Logger.log(Logger.LogLevel.DEBUG,"Tiny Lives has been enabled!");
+        Logger.log(Logger.LogLevel.NONE,"Tiny Lives has been enabled!");
     }
 
     private boolean setupEconomy() {

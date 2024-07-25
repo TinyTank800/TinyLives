@@ -16,6 +16,13 @@ public class ForceLoadCommand implements CommandExecutor {
     public ForceLoadCommand(Tinylives plugin) {
         this.plugin = plugin;
     }
+    
+    /*
+        Todo - Remove force load and force save commands as tinylives save and reload are a replacement for them
+        @author - TinyTank800
+        @date - 7/24/2024
+        @time - 8:14 PM
+         */
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {

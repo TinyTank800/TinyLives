@@ -19,28 +19,43 @@ public class Logger {
     }
 
     public enum LogLevel {
-        DEBUG, // Base level debug
+        NONE, // Base level debug
+        DEBUG, // Minor debug
         VERBOSE, // In-depth debug
         SEVERE // URGENT
     }
 
     public static void log(LogLevel level, String input){
         switch (level) {
+            case NONE:
+                // This is basic plugin info like start and stop and is always shown.
+                Tinylives.getInstance().getLogger().info(input);
+                break;
             case DEBUG:
-                if (Configs.Get("config.yml").getString("logging.debug").equalsIgnoreCase("debug")) {
+                // If debug is set to debug or verbose show this info.
+                if (Configs.Get("config.yml").getString("logging.debug").equalsIgnoreCase("debug") || Configs.Get("config.yml").getString("logging.debug").equalsIgnoreCase("verbose")) {
                     Tinylives.getInstance().getLogger().info(input);
                 }
                 break;
             case VERBOSE:
+                // If debug is verbose show everything.
                 if (Configs.Get("config.yml").getString("logging.debug").equalsIgnoreCase("verbose")) {
                     Tinylives.getInstance().getLogger().info(input);
                 }
                 break;
             case SEVERE:
+                // Errors or needed info goes here and is shown as a warning.
                 Tinylives.getInstance().getLogger().warning(input);
                 break;
         }
     }
+    
+    /*
+        Todo - Possibly change the file saving for text to be closer to the new system.
+        @author - TinyTank800
+        @date - 7/24/2024
+        @time - 8:13 PM
+         */
 
     public static void fileLog(String deathType, String name){
 

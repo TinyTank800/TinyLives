@@ -23,7 +23,7 @@ life-settings:
     cooldown: # Period of no damage after respawn.
       enabled: false
       time: 60 # Time in seconds for how long the cooldown is. Default 1 minute.
-    gamemode-bypass:
+    gamemode-bypass: # Do you want players with tinylives.gamemode.bypass to not change gamemodes when loading into the server?
       enabled: false
   lives: # How to handle lives given.
     default: 3 # Default amount of lives given.
@@ -75,7 +75,7 @@ display:
 
 ##Logging for debug and deaths. Debug will change what info is sent to console. Deaths will create a log file.
 logging:
-  debug: 1 # 0 = No debug | 1 = Base level | 2 = Detailed || Shows up in console
+  debug: "NONE" # NONE = No debug | DEBUG = Base level | VERBOSE = Detailed || Shows up in console
   deaths: false # True enables the death log for every player death || Saved in the deathLog.txt file
 
 

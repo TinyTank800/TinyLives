@@ -5,8 +5,9 @@ prefix: Tiny-Lives
 authors: [ TinyTank800 ]
 description: The best customizable limited life plugin!
 api-version: 1.13
-website: www.tinytank800.com
+website: https://github.com/TinyTank800/TinyLives
 softdepend: [PlaceholderAPI, Vault]
+load: POSTWORLD
 commands:
   forcesave:
     description: Force saves config files. ONLY USE IF YOU KNOW WHAT YOU ARE DOING!
