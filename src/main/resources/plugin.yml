@@ -1,0 +1,39 @@
+name: Tiny-Lives
+version: '${project.version}'
+main: com.tinytank800.tinylives.Tinylives
+prefix: Tiny-Lives
+authors: [ TinyTank800 ]
+description: The best customizable limited life plugin!
+api-version: 1.13
+website: www.tinytank800.com
+softdepend: [PlaceholderAPI, Vault]
+commands:
+  forcesave:
+    description: Force saves config files. ONLY USE IF YOU KNOW WHAT YOU ARE DOING!
+    permission: tinylives.forcesave
+    usage: /<command>
+  forceload:
+    description: Force loads config files. ONLY USE IF YOU KNOW WHAT YOU ARE DOING! THIS WILL OVERIDE CURRENT DATA!
+    permission: tinylives.forceload
+    usage: /<command>
+  tinylives:
+    description: Used for tiny lives.
+    permission: tinylives.tinylives
+    usage: /<command>
+    aliases:
+      - tl
+      - tinyl
+  lives:
+    description: Shows the amount of lives you currently have.
+    permission: tinylives.lives
+    usage: /<command>
+  givelife:
+    description: Give one of your lives to another player.
+    permission: tinylives.givelife
+    usage: /<command>
+    aliases:
+      - glife
+  revive:
+    description: Spend some lives to revive a dead player.
+    permission: tinylives.revive
+    usage: /<command>

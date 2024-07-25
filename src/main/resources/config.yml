@@ -1,0 +1,90 @@
+# |------------------------------------------------------------------------
+# |                       Tiny Lives Config File
+# |                         By TinyTank800 v1.0
+# |         https://www.spigotmc.org/resources/tiny-lives.92276/"
+# |
+# |              Read the getting started page here:
+# |    https://github.com/TinyTank800/TinyLives/wiki/Getting-Started
+# |------------------------------------------------------------------------
+
+life-settings:
+  reset: # How to handle player lives.
+    type: "all-death" # Options: all-death(start delay after all lives lost), add-lives(add lives globally after delay), global-reset(reset all/dead players after delay), none(to disable).
+    delay: 43200 #Delay in seconds between each reset. How long the player must wait.
+    enable-messages: true # Enable the messages for after respawning.
+    messages: # Messages sent either on all lives lost, globally when everyone resets, globally when lives are added.
+    - "&cAll your lives have been reset!"
+    - "&eYou now have %life% lives"
+  respawns: # How to handle respawns.
+    per-life: # How long it takes to respawn per life.
+      enabled: false
+      time: 3600 # Time in seconds for how long they must wait. Default 1 hour.
+      message: "&cYou are still respawning!"
+    cooldown: # Period of no damage after respawn.
+      enabled: false
+      time: 60 # Time in seconds for how long the cooldown is. Default 1 minute.
+    gamemode-bypass:
+      enabled: false
+  lives: # How to handle lives given.
+    default: 3 # Default amount of lives given.
+    max-lives: 3 # The max amount of lives able to be held from /givelife, Add-life reset, and crafted lives.
+    random-lives: # Give players a random amount of lives on join or respawn.
+      enabled: false
+      min-lives: 2 # Lowest the player can get.
+      max-lives: 6 # Highest the player can get.
+    enable-endless-lives: false # Do you want endless lives to be enabled? All ops will get it unless tinylives.endless is set to false in a permission manager.
+    reinforced-lives: # These act like totems and will protect you from death. Crafted in a smithing table.
+      enabled: false
+      max-lives: 2 # Max amount a player can hold.
+
+
+death-settings:
+  dead: # How to handle dead/respawning players.
+    type: "ghost-players" # Options: kick-players(kicks player on each join), deadman-world(moves them to the dead world), ghost-players(put players into spectator), none(to disable NOT recommended).
+    message: '&cYou have lost all your lives and have become a ghost!'
+  death-message: "%prefix% %color%%player% &f%death-message%."
+  pvp-only-deaths: false # PVP only deaths. Will deaths only be taken if it is a player caused death?
+  disable-pvp-deaths: false # Do you want to disable pvp deaths so only mobs or self caused deaths affect lives?
+  revive: # Do you want to allow the /revive command for players to revive the dead?
+    enabled: false
+    cost: 2 # Cost in lives for reviving a dead player.
+
+
+world-settings: # THESE SETTINGS ARE CASE SENSITIVE SO MAKE SURE YOU USE THE CORRECT CASE!
+  main-world: "world" # The main world will be the one players are moved to if they were in a different world when dead.
+  enabled-worlds: # Enabled worlds. These are the worlds you want affected by the plugin or which worlds lives should be taken on death.
+    - "world"
+    - "world_nether"
+    - "world_the_end"
+
+
+display:
+  chat:
+    enabled: true
+    format: '%prefix% %color%%player%'
+  player-tab:
+    enabled: true
+    format: '%prefix% %color%%player%'
+    refresh-time: 15 # In seconds. This refreshes the players in tablist for everyone. -1 to disable
+  tablist:
+    enabled: false
+    header: "&7Welcome to the server!\n"
+    footer: "\n&7Thanks for using &6&lTiny &e&lLives&7!\n&7Disable or change this in the config!"
+    refresh-time: 30 # In seconds. This refreshes the text around the tablist for everyone. -1 to disable
+
+
+##Logging for debug and deaths. Debug will change what info is sent to console. Deaths will create a log file.
+logging:
+  debug: 1 # 0 = No debug | 1 = Base level | 2 = Detailed || Shows up in console
+  deaths: false # True enables the death log for every player death || Saved in the deathLog.txt file
+
+
+##Would you like to use mySQL to sync data between servers?
+##NOT FUNCTIONAL YET
+MySQL:
+  enabled: false
+  host: "localhost"
+  port: "3306"
+  database: "tinylives"
+  username: "root"
+  password: ""

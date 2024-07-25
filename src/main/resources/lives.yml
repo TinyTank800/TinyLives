@@ -1,0 +1,161 @@
+# |------------------------------------------------------------------------
+# |                    Tiny Lives Player Lives File
+# |                         By TinyTank800 v1.0
+# |       https://www.spigotmc.org/resources/tiny-lives.92276/"
+# |
+# |      Only mess with this file if you know what you are doing!
+# |------------------------------------------------------------------------
+lives:
+  endless: # Used for anyone with the tinylives.endless tag.
+    enabled: false # Disables the use of endless lives.
+    prefix: "&8*Endless*"
+    color: '&8'
+    world: # If you would like to force players in this life to a specific world.
+      enabled: false
+      world: The_Endless # World name IS CASE SENSITIVE!
+    pvp: # If you want to enable pvp settings for this life.
+      enabled: false # This will not disable pvp just disable the control of start and fight back
+      startpvp: true # Can start a pvp session with a player
+      fightback: true # Can fight back when a session is started
+    on-death: # On death settings. Only triggered when you die on this life
+      disable-commands: true
+      disable-tp: true
+      commands: # Run console commands. Placeholder api supported
+        - say hi
+      tp: # Tp to location.
+        x: 100
+        y: 100
+        z: 100
+  '0': # Dead players
+    prefix: "&7*DEAD*"
+    color: '&7'
+    world: # If you would like to force players in this life to a specific world.
+      enabled: false
+      world: The_Endless # World name IS CASE SENSITIVE!
+    pvp: # If you want to enable pvp settings for this life.
+      enabled: false # This will not disable pvp just disable the control of start and fight back
+      startpvp: true # Can start a pvp session with a player
+      fightback: true # Can fight back when a session is started
+    on-death: # On death settings. Only triggered when you die on this life
+      disable-commands: true
+      disable-tp: true
+      commands: # Run console commands. Placeholder api supported
+        - say hi
+      tp: # Tp to location.
+        x: 100
+        y: 100
+        z: 100
+  '1':
+    prefix: "&8{&c1&8}"
+    color: '&c'
+    world: # If you would like to force players in this life to a specific world.
+      enabled: false
+      world: The_Endless # World name IS CASE SENSITIVE!
+    pvp: # If you want to enable pvp settings for this life.
+      enabled: false # This will not disable pvp just disable the control of start and fight back
+      startpvp: true # Can start a pvp session with a player
+      fightback: true # Can fight back when a session is started
+    on-death: # On death settings. Only triggered when you die on this life
+      disable-commands: true
+      disable-tp: true
+      commands: # Run console commands. Placeholder api supported
+        - say hi
+      tp: # Tp to location.
+        x: 100
+        y: 100
+        z: 100
+  '2':
+    prefix: "&8{&62&8}"
+    color: '&6'
+    world: # If you would like to force players in this life to a specific world.
+      enabled: false
+      world: The_Endless # World name IS CASE SENSITIVE!
+    pvp: # If you want to enable pvp settings for this life.
+      enabled: false # This will not disable pvp just disable the control of start and fight back
+      startpvp: true # Can start a pvp session with a player
+      fightback: true # Can fight back when a session is started
+    on-death: # On death settings. Only triggered when you die on this life
+      disable-commands: true
+      disable-tp: true
+      commands: # Run console commands. Placeholder api supported
+        - say hi
+      tp: # Tp to location.
+        x: 100
+        y: 100
+        z: 100
+  '3':
+    prefix: "&8{&e3&8}"
+    color: '&e'
+    world: # If you would like to force players in this life to a specific world.
+      enabled: false
+      world: The_Endless # World name IS CASE SENSITIVE!
+    pvp: # If you want to enable pvp settings for this life.
+      enabled: false # This will not disable pvp just disable the control of start and fight back
+      startpvp: true # Can start a pvp session with a player
+      fightback: true # Can fight back when a session is started
+    on-death: # On death settings. Only triggered when you die on this life
+      disable-commands: true
+      disable-tp: true
+      commands: # Run console commands. Placeholder api supported
+        - say hi
+      tp: # Tp to location.
+        x: 100
+        y: 100
+        z: 100
+  '4':
+    prefix: "&8{&a4&8}"
+    color: '&a'
+    world: # If you would like to force players in this life to a specific world.
+      enabled: false
+      world: The_Endless # World name IS CASE SENSITIVE!
+    pvp: # If you want to enable pvp settings for this life.
+      enabled: false # This will not disable pvp just disable the control of start and fight back
+      startpvp: true # Can start a pvp session with a player
+      fightback: true # Can fight back when a session is started
+    on-death: # On death settings. Only triggered when you die on this life
+      disable-commands: true
+      disable-tp: true
+      commands: # Run console commands. Placeholder api supported
+        - say hi
+      tp: # Tp to location.
+        x: 100
+        y: 100
+        z: 100
+  '5':
+    prefix: "&8{&25&8}"
+    color: '&2'
+    world: # If you would like to force players in this life to a specific world.
+      enabled: false
+      world: The_Endless # World name IS CASE SENSITIVE!
+    pvp: # If you want to enable pvp settings for this life.
+      enabled: false # This will not disable pvp just disable the control of start and fight back
+      startpvp: true # Can start a pvp session with a player
+      fightback: true # Can fight back when a session is started
+    on-death: # On death settings. Only triggered when you die on this life
+      disable-commands: true
+      disable-tp: true
+      commands: # Run console commands. Placeholder api supported
+        - say hi
+      tp: # Tp to location.
+        x: 100
+        y: 100
+        z: 100
+  '6':
+    prefix: "&8{&26&8}"
+    color: '&2'
+    world: # If you would like to force players in this life to a specific world.
+      enabled: false
+      world: The_Endless # World name IS CASE SENSITIVE!
+    pvp: # If you want to enable pvp settings for this life.
+      enabled: false # This will not disable pvp just disable the control of start and fight back
+      startpvp: true # Can start a pvp session with a player
+      fightback: true # Can fight back when a session is started
+    on-death: # On death settings. Only triggered when you die on this life
+      disable-commands: true
+      disable-tp: true
+      commands: # Run console commands. Placeholder api supported
+        - say hi
+      tp: # Tp to location.
+        x: 100
+        y: 100
+        z: 100
