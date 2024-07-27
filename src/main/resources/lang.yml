@@ -5,5 +5,4 @@
 # |
 # |      Only mess with this file if you know what you are doing!
 # |------------------------------------------------------------------------
-lang:
-  message: ""
+no-permission: '&cYou do not have permission.'

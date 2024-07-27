@@ -23,12 +23,11 @@ public class Configs {
             if (!file.exists()) {
                 InputStream defaultConfigStream = Tinylives.getInstance().getResource(config);
                 if (defaultConfigStream != null) {
-                    Logger.log(Logger.LogLevel.SEVERE, "not null");
                     if(!Config.containsKey(config)){
                         Config.put(config,YamlConfiguration.loadConfiguration(new InputStreamReader(defaultConfigStream)));
                     }
                 }
-                Logger.log(Logger.LogLevel.SEVERE, Config.toString());
+
                 save(Config.get(config), config);
             } else {
                 if(!Config.containsKey(config)){

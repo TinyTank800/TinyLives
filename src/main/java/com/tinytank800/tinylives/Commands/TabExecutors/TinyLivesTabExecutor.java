@@ -113,6 +113,18 @@ public class TinyLivesTabExecutor implements TabCompleter {
 
                 StringUtil.copyPartialMatches(args[2], Arrays.asList(Commands), List);
             }
+
+            if (args[0].equalsIgnoreCase("save")) {
+                final String[] Commands = { "--confirm" };
+
+                StringUtil.copyPartialMatches(args[2], Arrays.asList(Commands), List);
+            }
+
+            if (args[0].equalsIgnoreCase("reload")) {
+                final String[] Commands = { "--confirm" };
+
+                StringUtil.copyPartialMatches(args[2], Arrays.asList(Commands), List);
+            }
         }
 
         return List;

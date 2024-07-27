@@ -1,15 +1,11 @@
 package com.tinytank800.tinylives;
 
 import com.tinytank800.tinylives.Commands.Handlers.TimerHandler;
-import com.tinytank800.tinylives.Commands.TabExecutors.ForceTabExecutor;
 import com.tinytank800.tinylives.Commands.TabExecutors.TinyLivesTabExecutor;
 import com.tinytank800.tinylives.Commands.TinyLivesCommand;
 import com.tinytank800.tinylives.Listeners.PlayerQuitListener;
 import com.tinytank800.tinylives.Listeners.PlayerRespawnListener;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.tinytank800.tinylives.Commands.ForceLoadCommand;
-import com.tinytank800.tinylives.Commands.ForceSaveCommand;
 import com.tinytank800.tinylives.Listeners.PlayerDeathListener;
 import com.tinytank800.tinylives.Listeners.PlayerJoinListener;
 import com.tinytank800.tinylives.Resources.*;
@@ -77,10 +73,6 @@ public final class Tinylives extends JavaPlugin implements Listener {
 
         Objects.requireNonNull(getCommand("tinylives")).setExecutor(new TinyLivesCommand(this));
         Objects.requireNonNull(getCommand("tinylives")).setTabCompleter(new TinyLivesTabExecutor());
-        Objects.requireNonNull(getCommand("forcesave")).setExecutor(new ForceSaveCommand(this));
-        Objects.requireNonNull(getCommand("forceload")).setExecutor(new ForceLoadCommand(this));
-        Objects.requireNonNull(getCommand("forcesave")).setTabCompleter(new ForceTabExecutor());
-        Objects.requireNonNull(getCommand("forceload")).setTabCompleter(new ForceTabExecutor());
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);

@@ -53,19 +53,35 @@ public class TinyLivesCommand implements CommandExecutor {
             if(sender instanceof Player){
                 if(sender.hasPermission("tinylives.admin")){
                     if(args[1].equalsIgnoreCase("all")){
-                        Configs.Save("all");
+                        if (args[2].equalsIgnoreCase("--confirm")){
+                            Configs.Save("all");
+                        } else {
+                            sender.sendMessage("&cSaving to file will override any changes currently inside file/s. Please use /Tinylives save <file/ALL> --confirm to continue with save.");
+                        }
                     } else {
-                        Configs.Save(args[1]);
+                        if (args[2].equalsIgnoreCase("--confirm")){
+                            Configs.Save(args[1]);
+                        } else {
+                            sender.sendMessage("&cSaving to file will override any changes currently inside file/s. Please use /Tinylives save <file/ALL> --confirm to continue with save.");
+                        }
                     }
-                    sender.sendMessage(Parser.translateColor("&aConfigs saved correctly."));
+                    sender.sendMessage(Parser.translateColor("&aSuccessfully saved " + args[1] + " file/s."));
                 }
             } else if(sender instanceof ConsoleCommandSender) {
                 if(args[1].equalsIgnoreCase("all")){
-                    Configs.Save("all");
+                    if (args[2].equalsIgnoreCase("--confirm")){
+                        Configs.Save("all");
+                    } else {
+                        sender.sendMessage("&cSaving to file will override any changes currently inside file/s. Please use /Tinylives save <file/ALL> --confirm to continue with save.");
+                    }
                 } else {
-                    Configs.Save(args[1]);
+                    if (args[2].equalsIgnoreCase("--confirm")){
+                        Configs.Save(args[1]);
+                    } else {
+                        sender.sendMessage("&cSaving to file will override any changes currently inside file/s. Please use /Tinylives save <file/ALL> --confirm to continue with save.");
+                    }
                 }
-                sender.sendMessage(Parser.translateColor("&aConfigs saved correctly."));
+                sender.sendMessage(Parser.translateColor("&aSuccessfully saved " + args[1] + " file/s."));
             }
             return true;
         }
@@ -74,19 +90,35 @@ public class TinyLivesCommand implements CommandExecutor {
             if(sender instanceof Player){
                 if(sender.hasPermission("tinylives.admin")){
                     if(args[1].equalsIgnoreCase("all")){
-                        Configs.Reload("all");
+                        if (args[2].equalsIgnoreCase("--confirm")){
+                            Configs.Reload("all");
+                        } else {
+                            sender.sendMessage("&cReloading from file will override any unsaved changes to file/s. Please use /Tinylives reload <file/ALL> --confirm to continue with reload.");
+                        }
                     } else {
-                        Configs.Reload(args[1]);
+                        if (args[2].equalsIgnoreCase("--confirm")){
+                            Configs.Reload(args[1]);
+                        } else {
+                            sender.sendMessage("&cReloading from file will override any unsaved changes to file/s. Please use /Tinylives reload <file/ALL> --confirm to continue with reload.");
+                        }
                     }
-                    sender.sendMessage(Parser.translateColor("&aConfigs reloaded correctly."));
+                    sender.sendMessage(Parser.translateColor("&aSuccessfully reloaded " + args[1] + " file/s."));
                 }
             } else if(sender instanceof ConsoleCommandSender) {
                 if(args[1].equalsIgnoreCase("all")){
-                    Configs.Reload("all");
+                    if (args[2].equalsIgnoreCase("--confirm")){
+                        Configs.Reload("all");
+                    } else {
+                        sender.sendMessage("&cReloading from file will override any unsaved changes to file/s. Please use /Tinylives reload <file/ALL> --confirm to continue with reload.");
+                    }
                 } else {
-                    Configs.Reload(args[1]);
+                    if (args[2].equalsIgnoreCase("--confirm")){
+                        Configs.Reload(args[1]);
+                    } else {
+                        sender.sendMessage("&cReloading from file will override any unsaved changes to file/s. Please use /Tinylives reload <file/ALL> --confirm to continue with reload.");
+                    }
                 }
-                sender.sendMessage(Parser.translateColor("&aConfigs reloaded correctly."));
+                sender.sendMessage(Parser.translateColor("&aSuccessfully reloaded " + args[1] + " file/s."));
             }
             return true;
         }
