@@ -5,4 +5,6 @@
 # |
 # |      Only mess with this file if you know what you are doing!
 # |------------------------------------------------------------------------
-no-permission: '&cYou do not have permission.'
+prefix: '&8[&6&lTiny-Lives&8]&7:&r '
+messages:
+  no-permission: '&cYou do not have permission.'

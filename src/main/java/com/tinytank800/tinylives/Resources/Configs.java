@@ -15,7 +15,7 @@ public class Configs {
     //This holds all online players to allow for quick time/respawn checks
     public static HashMap<UUID, ConfigurationSection> playerConfigs = new HashMap<>();
     public static HashMap<String, FileConfiguration> Config = new HashMap<>();
-    private static final List<String> configs = List.of("config.yml", "playerdata.yml", "lives.yml", "lang.yml", "hooks.yml");
+    private static final List<String> configs = List.of("config.yml", "playerdata.yml", "lives.yml", "lang.yml");
 
     public static void setup() {
         for(String config : configs){
@@ -72,10 +72,11 @@ public class Configs {
         if (!file.exists()) {
             InputStream defaultConfigStream = Tinylives.getInstance().getResource(filename);
             if (defaultConfigStream != null) {
-                return YamlConfiguration.loadConfiguration(new InputStreamReader(defaultConfigStream));
+                Config.put(filename,YamlConfiguration.loadConfiguration(new InputStreamReader(defaultConfigStream)));
+                return Config.get(filename);
             }
         } else {
-            return YamlConfiguration.loadConfiguration(file);
+            return Config.replace(filename,YamlConfiguration.loadConfiguration(file));
         }
 
         return null;

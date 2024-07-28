@@ -17,7 +17,6 @@ public class TimerHandler {
         Tinylives.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(Tinylives.getInstance(), new Runnable() {
             @Override
             public void run() {
-                //Logger.log(Configs.playerConfigs.toString(), 2);
 
                 if(Configs.Get("config.yml").getString("life-settings.reset.type").equalsIgnoreCase("all-death")) {
                     if (!Configs.playerConfigs.isEmpty()) {

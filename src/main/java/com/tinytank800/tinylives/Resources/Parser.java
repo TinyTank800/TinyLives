@@ -1,5 +1,6 @@
 package com.tinytank800.tinylives.Resources;
 
+import com.tinytank800.tinylives.Tinylives;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -42,7 +43,7 @@ public class Parser {
         input = translateHexColorCodes("&#", "", input);
         input = ChatColor.translateAlternateColorCodes('&', input);
 
-        if(Configs.Get("hooks.yml").getBoolean("placeholderapi.enabled")){
+        if(Tinylives.getHook("placeholderapi")){
             input = PlaceholderAPI.setPlaceholders(player, input);
         }
 

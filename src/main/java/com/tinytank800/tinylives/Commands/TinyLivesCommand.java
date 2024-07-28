@@ -1,13 +1,12 @@
 package com.tinytank800.tinylives.Commands;
 
 import com.tinytank800.tinylives.Commands.Handlers.AddlifeHandler;
+import com.tinytank800.tinylives.Commands.Handlers.SetlifeHandler;
 import com.tinytank800.tinylives.Commands.Handlers.RemovelifeHandler;
 import com.tinytank800.tinylives.Commands.Handlers.ReviveHandler;
 import com.tinytank800.tinylives.Resources.Configs;
-import com.tinytank800.tinylives.Resources.Logger;
 import com.tinytank800.tinylives.Resources.Parser;
 import com.tinytank800.tinylives.Tinylives;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -36,6 +35,11 @@ public class TinyLivesCommand implements CommandExecutor {
 
         if(args[0].equalsIgnoreCase("removelife")){
             RemovelifeHandler.Removelife(sender, command, label, args);
+            return true;
+        }
+
+        if(args[0].equalsIgnoreCase("setlife")){
+            SetlifeHandler.Setlife(sender, command, label, args);
             return true;
         }
 

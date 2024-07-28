@@ -43,9 +43,10 @@ death-settings:
     type: "ghost-players" # Options: kick-players(kicks player on each join), deadman-world(moves them to the dead world), ghost-players(put players into spectator), none(to disable NOT recommended).
     message: '&cYou have lost all your lives and have become a ghost!'
   death-message: "%prefix% %color%%player% &f%death-message%."
-  pvp-only-deaths: false # PVP only deaths. Will deaths only be taken if it is a player caused death?
+  pvp-only-deaths: false # PVP only deaths. Will deaths only be taken if it is a player caused death.
   disable-pvp-deaths: false # Do you want to disable pvp deaths so only mobs or self caused deaths affect lives?
-  revive: # Do you want to allow the /revive command for players to revive the dead?
+  life-steal: false # Do you want players to gain a life on a player kill?
+  revive: # Do you want to allow the /revive command for players to revive the dead to 1 life?
     enabled: false
     cost: 2 # Cost in lives for reviving a dead player.
 

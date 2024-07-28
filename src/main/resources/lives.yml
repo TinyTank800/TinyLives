@@ -7,7 +7,6 @@
 # |------------------------------------------------------------------------
 lives:
   endless: # Used for anyone with the tinylives.endless tag.
-    enabled: false # Disables the use of endless lives.
     prefix: "&8*Endless*"
     color: '&8'
     world: # If you would like to force players in this life to a specific world.

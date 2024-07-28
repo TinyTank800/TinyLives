@@ -5,6 +5,7 @@ import com.tinytank800.tinylives.Commands.TabExecutors.TinyLivesTabExecutor;
 import com.tinytank800.tinylives.Commands.TinyLivesCommand;
 import com.tinytank800.tinylives.Listeners.PlayerQuitListener;
 import com.tinytank800.tinylives.Listeners.PlayerRespawnListener;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.tinytank800.tinylives.Listeners.PlayerDeathListener;
 import com.tinytank800.tinylives.Listeners.PlayerJoinListener;
@@ -14,6 +15,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -22,12 +25,7 @@ public final class Tinylives extends JavaPlugin implements Listener {
     private static Tinylives instance;
     private static Economy econ = null;
 
-    /*
-        Todo - Change hook system to just be held in memory on start.
-        @author - TinyTank800
-        @date - 7/24/2024
-        @time - 8:14 PM
-         */
+    public static HashMap<String, Boolean> hooks = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -45,23 +43,23 @@ public final class Tinylives extends JavaPlugin implements Listener {
         // I DONT THINK THIS IS NEEDED. JUST CHECK ON EVERY LOAD.
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new SpigotExpansion().register();
-            Configs.Get("hooks.yml").set("placeholderapi.enabled", true);
+            hooks.put("placeholderapi", true);
             Logger.log(Logger.LogLevel.DEBUG,"PlaceholderAPI hook found!");
         } else {
-            Configs.Get("hooks.yml").set("placeholderapi.enabled", false);
+            hooks.put("placeholderapi", false);
             Logger.log(Logger.LogLevel.DEBUG,"PlaceholderAPI hook was not found.");
         }
 
         if (setupEconomy()) {
-            Configs.Get("hooks.yml").set("vault.enabled", true);
+            hooks.put("vault", true);
             Logger.log(Logger.LogLevel.DEBUG,"Vault hook found!");
         } else {
-            Configs.Get("hooks.yml").set("vault.enabled", false);
+            hooks.put("vault", false);
             Logger.log(Logger.LogLevel.DEBUG,"Vault hook was not found.");
         }
 
         new UpdateChecker(this, 92276).getVersion(version -> {
-            if (this.getDescription().getVersion().equalsIgnoreCase(version) || this.getDescription().getVersion().contains("-dev")) {
+            if (this.getDescription().getVersion().equalsIgnoreCase(version) || this.getDescription().getVersion().contains("-DEV")) {
                 getLogger().info("You are running the latest version.");
             } else {
                 getLogger().info("There is a new update available! MAKE SURE TO READ CHANGES WHEN UPDATING! Update at https://www.spigotmc.org/resources/tiny-lives.92276/");
@@ -108,6 +106,10 @@ public final class Tinylives extends JavaPlugin implements Listener {
 
     private static void setInstance(Tinylives instance) {
         Tinylives.instance = instance;
+    }
+
+    public static Boolean getHook(String hook){
+        return hooks.getOrDefault(hook, false);
     }
 
     @Override

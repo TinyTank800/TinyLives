@@ -17,6 +17,7 @@ public class TinyLivesTabExecutor implements TabCompleter {
     static final Map<String, String> Commands = Map.of(
             "addlife", "tinylives.addlife",
             "removelife", "tinylives.removelife",
+            "setlife", "tinylives.setlife",
             "respawn", "tinylives.respawn",
             "reset", "tinylives.reset",
             "givelife", "tinylives.givelife",
@@ -37,7 +38,7 @@ public class TinyLivesTabExecutor implements TabCompleter {
     }
     
     /*
-        Todo - Make save and reload have a confirm. Possibly make a update file which will look for changes in disk file vs memory and updated values. This should help with not overiding memory changes or disk changes. 
+        Todo - Possibly make a update file which will look for changes in disk file vs memory and updated values. This should help with not overiding memory changes or disk changes.
         @author - TinyTank800
         @date - 7/24/2024
         @time - 8:16 PM
@@ -64,18 +65,9 @@ public class TinyLivesTabExecutor implements TabCompleter {
         }
 
         if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("addlife")) {
-                final List<String> Commands = new ArrayList<>();
-
-                List<Player> listOfPlayers = new ArrayList<>(Tinylives.getInstance().getServer().getOnlinePlayers());
-                for(Player onlinePlayer : listOfPlayers){
-                    Commands.add(onlinePlayer.getName());
-                }
-
-                StringUtil.copyPartialMatches(args[1], Commands, List);
-            }
-
-            if (args[0].equalsIgnoreCase("removelife")) {
+            if (args[0].equalsIgnoreCase("addlife") ||
+                    args[0].equalsIgnoreCase("removelife") ||
+                    args[0].equalsIgnoreCase("setlife")) {
                 final List<String> Commands = new ArrayList<>();
 
                 List<Player> listOfPlayers = new ArrayList<>(Tinylives.getInstance().getServer().getOnlinePlayers());
@@ -102,13 +94,9 @@ public class TinyLivesTabExecutor implements TabCompleter {
         }
 
         if (args.length == 3) {
-            if (args[0].equalsIgnoreCase("addlife")) {
-                final String[] Commands = { "<amount>" };
-
-                StringUtil.copyPartialMatches(args[2], Arrays.asList(Commands), List);
-            }
-
-            if (args[0].equalsIgnoreCase("removelife")) {
+            if (args[0].equalsIgnoreCase("addlife") ||
+                    args[0].equalsIgnoreCase("removelife") ||
+                    args[0].equalsIgnoreCase("setlife")) {
                 final String[] Commands = { "<amount>" };
 
                 StringUtil.copyPartialMatches(args[2], Arrays.asList(Commands), List);
