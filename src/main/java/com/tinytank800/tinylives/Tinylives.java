@@ -1,6 +1,10 @@
 package com.tinytank800.tinylives;
 
 import com.tinytank800.tinylives.Commands.Handlers.TimerHandler;
+import com.tinytank800.tinylives.Commands.LivesCommand;
+import com.tinytank800.tinylives.Commands.ReviveCommand;
+import com.tinytank800.tinylives.Commands.TabExecutors.LivesTabExecutor;
+import com.tinytank800.tinylives.Commands.TabExecutors.ReviveTabExecutor;
 import com.tinytank800.tinylives.Commands.TabExecutors.TinyLivesTabExecutor;
 import com.tinytank800.tinylives.Commands.TinyLivesCommand;
 import com.tinytank800.tinylives.Listeners.PlayerQuitListener;
@@ -70,7 +74,11 @@ public final class Tinylives extends JavaPlugin implements Listener {
         //Metrics metrics = new Metrics(this, pluginId);
 
         Objects.requireNonNull(getCommand("tinylives")).setExecutor(new TinyLivesCommand(this));
+        Objects.requireNonNull(getCommand("revive")).setExecutor(new ReviveCommand(this));
+        Objects.requireNonNull(getCommand("lives")).setExecutor(new LivesCommand(this));
         Objects.requireNonNull(getCommand("tinylives")).setTabCompleter(new TinyLivesTabExecutor());
+        Objects.requireNonNull(getCommand("revive")).setTabCompleter(new ReviveTabExecutor());
+        Objects.requireNonNull(getCommand("lives")).setTabCompleter(new LivesTabExecutor());
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);

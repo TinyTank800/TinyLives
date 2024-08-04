@@ -6,6 +6,7 @@
 # |              Read the getting started page here:
 # |    https://github.com/TinyTank800/TinyLives/wiki/Getting-Started
 # |------------------------------------------------------------------------
+prefix: "&8[&6&lTiny&7-&eLives&8]"
 
 life-settings:
   reset: # How to handle player lives.

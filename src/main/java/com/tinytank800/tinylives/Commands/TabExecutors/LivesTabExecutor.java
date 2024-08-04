@@ -13,31 +13,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ReviveTabExecutor implements TabCompleter {
+public class LivesTabExecutor implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         final List<String> List = new ArrayList<>();
 
         if(args.length == 1){
+            if(!sender.hasPermission("tinylives.lives.others")){
+                return List;
+            }
 
             final List<String> Commands = new ArrayList<>();
 
             List<Player> listOfPlayers = new ArrayList<>(Tinylives.getInstance().getServer().getOnlinePlayers());
             for(Player onlinePlayer : listOfPlayers){
-                if(PlayerUtils.IsDead(onlinePlayer)){
-                    Commands.add(onlinePlayer.getName());
-                }
+                Commands.add(onlinePlayer.getName());
             }
 
             StringUtil.copyPartialMatches(args[0], Commands, List);
-        }
-
-        if(args.length == 2){
-
-            final String[] Commands = { "--confirm" };
-
-            StringUtil.copyPartialMatches(args[1], Arrays.asList(Commands), List);
         }
 
         return List;
